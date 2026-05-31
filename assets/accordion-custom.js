@@ -108,8 +108,25 @@ if (!customElements.get('accordion-custom')) {
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('accordion-custom').forEach((el) => {
     const summary = el.querySelector('summary');
-    if (summary && summary.textContent.includes("WHAT'S IN THE BOX")) {
-      el.querySelector('.details-content').classList.add('witb-spec-rows');
+    if (!summary || !summary.textContent.includes("WHAT'S IN THE BOX")) return;
+
+    const content = el.querySelector('.details-content');
+    content.classList.add('witb-spec-rows');
+
+    const p = content.querySelector('p');
+    if (!p) return;
+
+    const span = p.querySelector('span') || p;
+    const items = span.innerHTML.split(/<br\s*\/?>/i).map(s => s.trim()).filter(Boolean);
+
+    if (items.length > 1) {
+      const wrapper = document.createElement('div');
+      items.forEach(item => {
+        const row = document.createElement('p');
+        row.innerHTML = item;
+        wrapper.appendChild(row);
+      });
+      p.replaceWith(wrapper);
     }
   });
 });
