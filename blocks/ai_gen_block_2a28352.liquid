@@ -174,27 +174,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    padding: 10px 0 4px;
+    gap: 7px;
+    padding: 6px 0;
   }
 
   .dp-showcase__dot-{{ ai_gen_id }} {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: {{ block.settings.border_color }};
-    opacity: 0.25;
+    background: rgba(0,0,0,0.35);
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: background 0.2s, transform 0.2s;
     flex-shrink: 0;
   }
 
   .dp-showcase__dot-{{ ai_gen_id }}.is-active {
-    opacity: 1;
-    transform: scale(1.3);
     background: {{ block.settings.accent_color }};
+    transform: scale(1.4);
   }
 
   .dp-showcase__thumb-play-{{ ai_gen_id }} {
@@ -632,6 +630,14 @@
     {% assign image_media = selected_product.media | where: 'media_type', 'image' %}
     {% assign media_count = video_media.size | plus: external_video_media.size | plus: image_media.size %}
 
+    {% assign first_video = video_media.first %}
+    {% if first_video %}
+      {% assign mp4_source = first_video.sources | where: 'format', 'mp4' | last %}
+      {% if mp4_source %}
+        <link rel="preload" as="video" href="{{ mp4_source.url }}" fetchpriority="high">
+      {% endif %}
+    {% endif %}
+
     <div class="dp-showcase__wrap-{{ ai_gen_id }}">
       <div class="dp-showcase__media-area-{{ ai_gen_id }}">
         <div class="dp-showcase__main-media-{{ ai_gen_id }}">
@@ -941,6 +947,12 @@
           track.addEventListener('scroll', () => window.requestAnimationFrame(updateMedia));
           window.addEventListener('resize', updateMedia);
           updateMedia();
+        }
+
+        const firstVideo = this.querySelector('video');
+        if (firstVideo) {
+          firstVideo.muted = true;
+          firstVideo.play().catch(() => {});
         }
 
         if (minus && qtyInput) {
