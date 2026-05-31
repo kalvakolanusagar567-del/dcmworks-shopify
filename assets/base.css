@@ -4153,12 +4153,9 @@ text-component {
 }
 
 /* WHAT'S IN THE BOX — spec row styling */
-.details:has(.details__header):has(summary:first-child) + * .witb-content p,
-.details:has(> summary .details__header) .witb-content p { display: flex; }
-
-.witb-spec-row { border-top: 1px solid #d8d0c3; }
-.witb-spec-row p,
-.witb-spec-row li {
+.witb-spec-rows { border-top: 1px solid #d8d0c3; }
+.witb-spec-rows p,
+.witb-spec-rows li {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -4175,5 +4172,5 @@ text-component {
   line-height: 1.4;
   list-style: none;
 }
-.witb-spec-row ul,
-.witb-spec-row ol { padding: 0; margin: 0; }
+.witb-spec-rows ul,
+.witb-spec-rows ol { padding: 0; margin: 0; }

@@ -104,3 +104,12 @@ class AccordionCustom extends HTMLElement {
 if (!customElements.get('accordion-custom')) {
   customElements.define('accordion-custom', AccordionCustom);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('accordion-custom').forEach((el) => {
+    const summary = el.querySelector('summary');
+    if (summary && summary.textContent.includes("WHAT'S IN THE BOX")) {
+      el.querySelector('.details-content').classList.add('witb-spec-rows');
+    }
+  });
+});
