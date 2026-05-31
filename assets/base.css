@@ -4151,3 +4151,29 @@ text-component {
 .accordion .details__header{
   font-weight:700 !important;
 }
+
+/* WHAT'S IN THE BOX — spec row styling */
+.details:has(.details__header):has(summary:first-child) + * .witb-content p,
+.details:has(> summary .details__header) .witb-content p { display: flex; }
+
+.witb-spec-row { border-top: 1px solid #d8d0c3; }
+.witb-spec-row p,
+.witb-spec-row li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid #d8d0c3;
+  padding: 13px 0;
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #030302;
+  line-height: 1.4;
+  list-style: none;
+}
+.witb-spec-row ul,
+.witb-spec-row ol { padding: 0; margin: 0; }

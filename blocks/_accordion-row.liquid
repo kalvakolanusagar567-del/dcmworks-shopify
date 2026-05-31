@@ -8,7 +8,6 @@
 >
   <details
     class="details"
-    data-heading="{{ block.settings.heading | downcase | replace: "'", '' | replace: ' ', '-' }}"
     {{ block.shopify_attributes }}
   >
     <summary class="details__header">
@@ -37,35 +36,6 @@
   .details__icon {
     height: auto;
     margin-inline-end: var(--margin-xs);
-  }
-
-  [data-heading="what's-in-the-box"] .details-content p,
-  [data-heading="what's-in-the-box"] .details-content li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    border-bottom: 1px solid #d8d0c3;
-    padding: 13px 0;
-    margin: 0;
-    font-family: Inter, sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: #030302;
-    line-height: 1.4;
-    list-style: none;
-  }
-
-  [data-heading="what's-in-the-box"] .details-content .details-content__blocks {
-    border-top: 1px solid #d8d0c3;
-  }
-
-  [data-heading="what's-in-the-box"] .details-content ul,
-  [data-heading="what's-in-the-box"] .details-content ol {
-    padding: 0;
-    margin: 0;
   }
 {% endstylesheet %}
 
