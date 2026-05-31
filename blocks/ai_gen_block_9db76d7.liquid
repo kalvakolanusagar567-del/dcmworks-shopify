@@ -670,7 +670,7 @@
 
             {% for media in video_media %}
               <div class="dp-feature__media-slide-{{ ai_gen_id }}" data-media-slide data-media-id="{{ media.id }}">
-                {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'metadata', class: video_class }}
+                {{ media | video_tag: controls: false, muted: true, autoplay: true, loop: true, playsinline: true, preload: 'auto', class: video_class }}
               </div>
             {% endfor %}
 
