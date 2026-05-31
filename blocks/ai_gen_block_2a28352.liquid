@@ -759,7 +759,7 @@
         {% if block.settings.show_rating %}
           {% assign dynamic_review_count = selected_product.metafields.reviews.rating_count | default: block.settings.review_count %}
           <div class="dp-showcase__rating-{{ ai_gen_id }}">
-            <span class="dp-showcase__stars-{{ ai_gen_id }}">★★★★★</span>
+            <span class="dp-showcase__stars-{{ ai_gen_id }}">★★★★½</span>
             <span>({{ dynamic_review_count }} reviews)</span>
           </div>
         {% endif %}
