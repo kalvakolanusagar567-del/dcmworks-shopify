@@ -1,0 +1,1337 @@
+{% doc %}
+  @prompt
+    Product showcase with product media gallery, video first, thumbnails, variants, add to cart, dynamic checkout, and responsive mobile layout.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign selected_product = block.settings.product | default: product %}
+
+{% style %}
+  {{ block.settings.heading_font | font_face }}
+  {{ block.settings.body_font | font_face }}
+
+  .dp-showcase-{{ ai_gen_id }} {
+    width: 100%;
+    background: {{ block.settings.section_bg }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.desktop_padding_top }}px {{ block.settings.desktop_padding_x }}px {{ block.settings.desktop_padding_bottom }}px;
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+  }
+
+  .dp-showcase__wrap-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: {{ block.settings.media_width }}% 1fr;
+    gap: {{ block.settings.column_gap }}px;
+    align-items: start;
+  }
+
+  .dp-showcase__main-media-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ block.settings.desktop_media_aspect }};
+    overflow: hidden;
+    border-radius: {{ block.settings.media_radius }}px;
+    background: #111;
+  }
+
+  .dp-showcase__track-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .dp-showcase__track-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dp-showcase__slide-{{ ai_gen_id }} {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    background: #111;
+  }
+
+  .dp-showcase__image-{{ ai_gen_id }},
+  .dp-showcase__video-{{ ai_gen_id }},
+  .dp-showcase__external-video-{{ ai_gen_id }},
+  .dp-showcase__slide-{{ ai_gen_id }} iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border: 0;
+  }
+
+  .dp-showcase__play-{{ ai_gen_id }} {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 4;
+    width: {{ block.settings.play_size }}px;
+    height: {{ block.settings.play_size }}px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: rgba(0,0,0,.35);
+    pointer-events: none;
+  }
+
+
+  .dp-showcase__play-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .dp-showcase__play-{{ ai_gen_id }}.is-visible {
+    display: block;
+  }
+
+  .dp-showcase__play-{{ ai_gen_id }}::after {
+    content: "";
+    position: absolute;
+    left: 52%;
+    top: 50%;
+    transform: translate(-35%, -50%);
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    border-left: 19px solid #fff;
+  }
+
+  .dp-showcase__counter-{{ ai_gen_id }} {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 5;
+    background: rgba(0,0,0,.75);
+    color: #fff;
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-size: {{ block.settings.counter_size }}px;
+    font-weight: {{ block.settings.counter_weight }};
+    letter-spacing: {{ block.settings.counter_spacing }}px;
+    line-height: 1;
+  }
+
+  .dp-showcase__zoom-{{ ai_gen_id }} {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 5;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dp-showcase__zoom-{{ ai_gen_id }} svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dp-showcase__thumbs-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.thumbs_per_row }}, 1fr);
+    gap: {{ block.settings.thumb_gap }}px;
+    margin-top: {{ block.settings.thumb_top_gap }}px;
+  }
+
+  .dp-showcase__thumb-{{ ai_gen_id }} {
+    position: relative;
+    aspect-ratio: {{ block.settings.thumb_aspect }};
+    border: 2px solid transparent;
+    border-radius: {{ block.settings.thumb_radius }}px;
+    overflow: hidden;
+    background: #111;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .dp-showcase__thumb-{{ ai_gen_id }}.is-active {
+    border-color: {{ block.settings.accent_color }};
+  }
+
+  .dp-showcase__thumb-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .dp-showcase__thumb-play-{{ ai_gen_id }} {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 38px;
+    height: 38px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: rgba(0,0,0,.65);
+  }
+
+  .dp-showcase__thumb-play-{{ ai_gen_id }}::after {
+    content: "";
+    position: absolute;
+    left: 52%;
+    top: 50%;
+    transform: translate(-35%, -50%);
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid #fff;
+  }
+
+  .dp-showcase__info-{{ ai_gen_id }} {
+    padding-top: {{ block.settings.info_top_padding }}px;
+  }
+
+  .dp-showcase__title-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.title_gap }}px;
+    color: {{ block.settings.heading_color }};
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: {{ block.settings.title_weight }};
+    letter-spacing: {{ block.settings.title_spacing }}px;
+    line-height: {{ block.settings.title_line_height }};
+  }
+
+  .dp-showcase__rating-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: {{ block.settings.rating_gap }}px;
+    font-size: {{ block.settings.rating_size }}px;
+    font-weight: {{ block.settings.rating_weight }};
+    letter-spacing: {{ block.settings.rating_spacing }}px;
+    line-height: 1;
+  }
+
+  .dp-showcase__stars-{{ ai_gen_id }} {
+    color: {{ block.settings.star_color }};
+    letter-spacing: 1px;
+  }
+
+  .dp-showcase__trust-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.trust_gap }}px;
+    font-size: {{ block.settings.trust_size }}px;
+    font-weight: {{ block.settings.trust_weight }};
+    letter-spacing: {{ block.settings.trust_spacing }}px;
+    line-height: 1.25;
+  }
+
+  .dp-showcase__edition-label-{{ ai_gen_id }} {
+    display: block;
+    margin: 0 0 {{ block.settings.label_gap }}px;
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: {{ block.settings.label_weight }};
+    letter-spacing: {{ block.settings.label_spacing }}px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .dp-showcase__variants-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: {{ block.settings.variant_gap }}px;
+    margin-bottom: {{ block.settings.variant_bottom_gap }}px;
+  }
+
+  .dp-showcase__variant-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .dp-showcase__variant-{{ ai_gen_id }} input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dp-showcase__variant-box-{{ ai_gen_id }} {
+    min-height: {{ block.settings.variant_height }}px;
+    border: 1px solid {{ block.settings.variant_border }};
+    border-radius: {{ block.settings.variant_radius }}px;
+    background: #fff;
+    color: {{ block.settings.text_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: {{ block.settings.variant_inner_gap }}px;
+    padding: 6px 8px;
+    cursor: pointer;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: {{ block.settings.variant_size }}px;
+    font-weight: {{ block.settings.variant_weight }};
+    letter-spacing: {{ block.settings.variant_spacing }}px;
+    line-height: 1.05;
+  }
+
+  .dp-showcase__variant-box-{{ ai_gen_id }} img {
+    width: {{ block.settings.variant_icon_width }}px;
+    height: {{ block.settings.variant_icon_height }}px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .dp-showcase__variant-{{ ai_gen_id }} input:checked + .dp-showcase__variant-box-{{ ai_gen_id }} {
+    border-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.accent_color }};
+    box-shadow: inset 0 0 0 1px {{ block.settings.accent_color }};
+  }
+
+  .dp-showcase__price-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.price_gap }}px;
+    color: {{ block.settings.heading_color }};
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-size: {{ block.settings.price_size }}px;
+    font-weight: {{ block.settings.price_weight }};
+    letter-spacing: {{ block.settings.price_spacing }}px;
+    line-height: 1;
+  }
+
+  .dp-showcase__qty-label-{{ ai_gen_id }} {
+    display: block;
+    margin-bottom: {{ block.settings.qty_label_gap }}px;
+    font-size: {{ block.settings.qty_label_size }}px;
+    font-weight: {{ block.settings.qty_label_weight }};
+    letter-spacing: {{ block.settings.qty_label_spacing }}px;
+    line-height: 1;
+  }
+
+  .dp-showcase__buy-row-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: {{ block.settings.buy_gap }}px;
+    margin-bottom: {{ block.settings.buy_bottom_gap }}px;
+  }
+
+  .dp-showcase__qty-{{ ai_gen_id }} {
+    height: {{ block.settings.button_height }}px;
+    display: inline-flex;
+    border: 1px solid {{ block.settings.input_border }};
+    background: #fff;
+  }
+
+  .dp-showcase__qty-btn-{{ ai_gen_id }} {
+    width: {{ block.settings.qty_button_width }}px;
+    border: 0;
+    background: transparent;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.qty_button_size }}px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .dp-showcase__qty-input-{{ ai_gen_id }} {
+    width: {{ block.settings.qty_input_width }}px;
+    border: 0;
+    border-left: 1px solid {{ block.settings.input_border }};
+    border-right: 1px solid {{ block.settings.input_border }};
+    text-align: center;
+    background: transparent;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.qty_input_size }}px;
+    font-weight: 400;
+    -moz-appearance: textfield;
+  }
+
+  .dp-showcase__qty-input-{{ ai_gen_id }}::-webkit-inner-spin-button,
+  .dp-showcase__qty-input-{{ ai_gen_id }}::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .dp-showcase__add-{{ ai_gen_id }} {
+    width: 100%;
+    min-height: {{ block.settings.button_height }}px;
+    border: 0;
+    border-radius: {{ block.settings.button_radius }}px;
+    background: {{ block.settings.button_bg }};
+    color: {{ block.settings.button_color }};
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: {{ block.settings.button_size }}px;
+    font-weight: {{ block.settings.button_weight }};
+    letter-spacing: {{ block.settings.button_spacing }}px;
+    line-height: 1;
+  }
+
+  .dp-showcase__add-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_bg }};
+  }
+
+  .dp-showcase__add-{{ ai_gen_id }}:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .dp-showcase__dynamic-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.dynamic_gap }}px;
+  }
+
+  .dp-showcase__dynamic-{{ ai_gen_id }} .shopify-payment-button__button {
+    min-height: {{ block.settings.dynamic_height }}px;
+    border-radius: {{ block.settings.dynamic_radius }}px;
+  }
+
+  .dp-showcase__payment-note-{{ ai_gen_id }} {
+    display: block;
+    text-align: center;
+    color: {{ block.settings.payment_note_color }};
+    font-size: {{ block.settings.payment_note_size }}px;
+    font-weight: {{ block.settings.payment_note_weight }};
+    letter-spacing: {{ block.settings.payment_note_spacing }}px;
+    line-height: 1.2;
+    text-decoration: underline;
+    margin-bottom: {{ block.settings.payment_note_gap }}px;
+  }
+
+  .dp-showcase__features-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid {{ block.settings.feature_border }};
+  }
+
+  .dp-showcase__feature-{{ ai_gen_id }} {
+    min-height: {{ block.settings.feature_height }}px;
+    border-right: 1px solid {{ block.settings.feature_border }};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: {{ block.settings.feature_gap }}px;
+    text-align: center;
+    padding: {{ block.settings.feature_padding }}px;
+    font-size: {{ block.settings.feature_size }}px;
+    font-weight: {{ block.settings.feature_weight }};
+    letter-spacing: {{ block.settings.feature_spacing }}px;
+    line-height: {{ block.settings.feature_line_height }};
+    color: {{ block.settings.text_color }};
+  }
+
+  .dp-showcase__feature-{{ ai_gen_id }}:last-child {
+    border-right: 0;
+  }
+
+  .dp-showcase__feature-{{ ai_gen_id }} svg {
+    width: {{ block.settings.feature_icon_size }}px;
+    height: {{ block.settings.feature_icon_size }}px;
+    stroke: currentColor;
+  }
+
+  .dp-showcase__empty-{{ ai_gen_id }} {
+    padding: 50px 20px;
+    text-align: center;
+    background: #f5f5f5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dp-showcase-{{ ai_gen_id }} {
+      padding: {{ block.settings.mobile_padding_top }}px {{ block.settings.mobile_padding_x }}px {{ block.settings.mobile_padding_bottom }}px;
+      background: {{ block.settings.mobile_section_bg }};
+    }
+
+    .dp-showcase__wrap-{{ ai_gen_id }} {
+      display: block;
+      max-width: {{ block.settings.mobile_max_width }}px;
+    }
+
+    .dp-showcase__media-area-{{ ai_gen_id }} {
+      margin-bottom: {{ block.settings.mobile_media_gap }}px;
+    }
+
+    .dp-showcase__main-media-{{ ai_gen_id }} {
+      aspect-ratio: {{ block.settings.mobile_media_aspect }};
+      border-radius: {{ block.settings.mobile_media_radius }}px;
+    }
+
+    .dp-showcase__thumbs-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .dp-showcase__play-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_play_size }}px;
+      height: {{ block.settings.mobile_play_size }}px;
+      border-width: 2px;
+    }
+
+    .dp-showcase__play-{{ ai_gen_id }}::after {
+      border-top-width: 10px;
+      border-bottom-width: 10px;
+      border-left-width: 15px;
+    }
+
+    .dp-showcase__counter-{{ ai_gen_id }} {
+      left: 10px;
+      bottom: 10px;
+      padding: 5px 8px;
+      font-size: {{ block.settings.mobile_counter_size }}px;
+    }
+
+    .dp-showcase__zoom-{{ ai_gen_id }} {
+      width: 30px;
+      height: 30px;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    .dp-showcase__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_title_size }}px;
+      letter-spacing: {{ block.settings.mobile_title_spacing }}px;
+      line-height: {{ block.settings.mobile_title_line_height }};
+      margin-bottom: {{ block.settings.mobile_title_gap }}px;
+    }
+
+    .dp-showcase__rating-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_rating_size }}px;
+      margin-bottom: {{ block.settings.mobile_rating_gap }}px;
+    }
+
+    .dp-showcase__trust-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_trust_size }}px;
+      margin-bottom: {{ block.settings.mobile_trust_gap }}px;
+    }
+
+    .dp-showcase__edition-label-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_label_size }}px;
+      margin-bottom: {{ block.settings.mobile_label_gap }}px;
+    }
+
+    .dp-showcase__variants-{{ ai_gen_id }} {
+      gap: {{ block.settings.mobile_variant_gap }}px;
+      margin-bottom: {{ block.settings.mobile_variant_bottom_gap }}px;
+    }
+
+    .dp-showcase__variant-box-{{ ai_gen_id }} {
+      min-height: {{ block.settings.mobile_variant_height }}px;
+      font-size: {{ block.settings.mobile_variant_size }}px;
+      gap: {{ block.settings.mobile_variant_inner_gap }}px;
+      padding: 5px 6px;
+    }
+
+    .dp-showcase__variant-box-{{ ai_gen_id }} img {
+      width: {{ block.settings.mobile_variant_icon_width }}px;
+      height: {{ block.settings.mobile_variant_icon_height }}px;
+    }
+
+    .dp-showcase__price-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_price_size }}px;
+      margin-bottom: {{ block.settings.mobile_price_gap }}px;
+    }
+
+    .dp-showcase__qty-label-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_qty_label_size }}px;
+      margin-bottom: {{ block.settings.mobile_qty_label_gap }}px;
+    }
+
+    .dp-showcase__buy-row-{{ ai_gen_id }} {
+      gap: {{ block.settings.mobile_buy_gap }}px;
+      margin-bottom: {{ block.settings.mobile_buy_bottom_gap }}px;
+    }
+
+    .dp-showcase__qty-{{ ai_gen_id }} {
+      height: {{ block.settings.mobile_button_height }}px;
+    }
+
+    .dp-showcase__qty-btn-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_qty_button_width }}px;
+      font-size: {{ block.settings.mobile_qty_button_size }}px;
+    }
+
+    .dp-showcase__qty-input-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_qty_input_width }}px;
+      font-size: {{ block.settings.mobile_qty_input_size }}px;
+    }
+
+    .dp-showcase__add-{{ ai_gen_id }} {
+      min-height: {{ block.settings.mobile_button_height }}px;
+      font-size: {{ block.settings.mobile_button_size }}px;
+    }
+
+    .dp-showcase__dynamic-{{ ai_gen_id }} .shopify-payment-button__button {
+      min-height: {{ block.settings.mobile_dynamic_height }}px;
+    }
+
+    .dp-showcase__payment-note-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_payment_note_size }}px;
+      margin-bottom: {{ block.settings.mobile_payment_note_gap }}px;
+    }
+
+    .dp-showcase__feature-{{ ai_gen_id }} {
+      min-height: {{ block.settings.mobile_feature_height }}px;
+      padding: {{ block.settings.mobile_feature_padding }}px;
+      font-size: {{ block.settings.mobile_feature_size }}px;
+      gap: {{ block.settings.mobile_feature_gap }}px;
+    }
+
+    .dp-showcase__feature-{{ ai_gen_id }} svg {
+      width: {{ block.settings.mobile_feature_icon_size }}px;
+      height: {{ block.settings.mobile_feature_icon_size }}px;
+    }
+  }
+  .dp-showcase__main-media-{{ ai_gen_id }},
+.dp-showcase__slide-{{ ai_gen_id }},
+.dp-showcase__thumb-{{ ai_gen_id }} {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.dp-showcase__image-{{ ai_gen_id }},
+.dp-showcase__video-{{ ai_gen_id }},
+.dp-showcase__external-video-{{ ai_gen_id }},
+.dp-showcase__slide-{{ ai_gen_id }} iframe {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+{% endstyle %}
+
+<dp-showcase-{{ ai_gen_id }} class="dp-showcase-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if selected_product != blank %}
+    {% assign current_variant = selected_product.selected_or_first_available_variant %}
+    {% assign video_media = selected_product.media | where: 'media_type', 'video' %}
+    {% assign external_video_media = selected_product.media | where: 'media_type', 'external_video' %}
+    {% assign image_media = selected_product.media | where: 'media_type', 'image' %}
+    {% assign media_count = video_media.size | plus: external_video_media.size | plus: image_media.size %}
+
+    <div class="dp-showcase__wrap-{{ ai_gen_id }}">
+      <div class="dp-showcase__media-area-{{ ai_gen_id }}">
+        <div class="dp-showcase__main-media-{{ ai_gen_id }}">
+          <div class="dp-showcase__track-{{ ai_gen_id }}" data-media-track>
+            {% assign video_class = 'dp-showcase__video-' | append: ai_gen_id %}
+            {% assign external_video_class = 'dp-showcase__external-video-' | append: ai_gen_id %}
+
+            {% for media in video_media %}
+              <div class="dp-showcase__slide-{{ ai_gen_id }}" data-media-slide data-media-type="video" data-media-id="{{ media.id }}">
+                {{ media | video_tag: controls: true, muted: true, playsinline: true, preload: 'metadata', class: video_class }}
+              </div>
+            {% endfor %}
+
+            {% for media in external_video_media %}
+              <div class="dp-showcase__slide-{{ ai_gen_id }}" data-media-slide data-media-type="video" data-media-id="{{ media.id }}">
+                {{ media | external_video_tag: class: external_video_class }}
+              </div>
+            {% endfor %}
+
+            {% for media in image_media %}
+              <div class="dp-showcase__slide-{{ ai_gen_id }}" data-media-slide data-media-type="image" data-media-id="{{ media.id }}">
+                <img
+                  src="{{ media.preview_image | image_url: width: 1600 }}"
+                  alt="{{ media.alt | escape }}"
+                  class="dp-showcase__image-{{ ai_gen_id }}"
+                  loading="{% if forloop.first and video_media.size == 0 and external_video_media.size == 0 %}eager{% else %}lazy{% endif %}"
+                  width="{{ media.preview_image.width }}"
+                  height="{{ media.preview_image.height }}"
+                >
+              </div>
+            {% endfor %}
+
+            {% if media_count == 0 and selected_product.featured_image %}
+              {% assign media_count = 1 %}
+              <div class="dp-showcase__slide-{{ ai_gen_id }}" data-media-slide data-media-type="image" data-media-id="{{ selected_product.featured_media.id }}">
+                <img
+                  src="{{ selected_product.featured_image | image_url: width: 1600 }}"
+                  alt="{{ selected_product.featured_image.alt | escape }}"
+                  class="dp-showcase__image-{{ ai_gen_id }}"
+                  loading="eager"
+                  width="{{ selected_product.featured_image.width }}"
+                  height="{{ selected_product.featured_image.height }}"
+                >
+              </div>
+            {% endif %}
+          </div>
+
+          {% if block.settings.show_center_play %}
+            <span class="dp-showcase__play-{{ ai_gen_id }}" aria-hidden="true" data-center-play></span>
+          {% endif %}
+
+          {% if block.settings.show_counter %}
+            <span class="dp-showcase__counter-{{ ai_gen_id }}" data-media-counter>1/{{ media_count }}</span>
+          {% endif %}
+
+          {% if block.settings.show_zoom %}
+            <button class="dp-showcase__zoom-{{ ai_gen_id }}" type="button" aria-label="Zoom image">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+
+        {% if media_count > 1 %}
+          <div class="dp-showcase__thumbs-{{ ai_gen_id }}">
+            {% assign thumb_index = 0 %}
+
+            {% for media in video_media %}
+              {% assign thumb_index = thumb_index | plus: 1 %}
+              <button class="dp-showcase__thumb-{{ ai_gen_id }} {% if thumb_index == 1 %}is-active{% endif %}" type="button" data-media-thumb data-index="{{ thumb_index | minus: 1 }}">
+                {% if media.preview_image %}
+                  <img src="{{ media.preview_image | image_url: width: 300 }}" alt="{{ selected_product.title | escape }}" loading="lazy">
+                {% endif %}
+                <span class="dp-showcase__thumb-play-{{ ai_gen_id }}"></span>
+              </button>
+            {% endfor %}
+
+            {% for media in external_video_media %}
+              {% assign thumb_index = thumb_index | plus: 1 %}
+              <button class="dp-showcase__thumb-{{ ai_gen_id }} {% if thumb_index == 1 %}is-active{% endif %}" type="button" data-media-thumb data-index="{{ thumb_index | minus: 1 }}">
+                {% if media.preview_image %}
+                  <img src="{{ media.preview_image | image_url: width: 300 }}" alt="{{ selected_product.title | escape }}" loading="lazy">
+                {% endif %}
+                <span class="dp-showcase__thumb-play-{{ ai_gen_id }}"></span>
+              </button>
+            {% endfor %}
+
+            {% for media in image_media %}
+              {% assign thumb_index = thumb_index | plus: 1 %}
+              <button class="dp-showcase__thumb-{{ ai_gen_id }} {% if thumb_index == 1 %}is-active{% endif %}" type="button" data-media-thumb data-index="{{ thumb_index | minus: 1 }}">
+                <img src="{{ media.preview_image | image_url: width: 300 }}" alt="{{ media.alt | escape }}" loading="lazy">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="dp-showcase__info-{{ ai_gen_id }}">
+        <h1 class="dp-showcase__title-{{ ai_gen_id }}">{{ selected_product.title }}</h1>
+
+        {% if block.settings.show_rating %}
+          {% assign dynamic_review_count = selected_product.metafields.reviews.rating_count | default: block.settings.review_count %}
+          <div class="dp-showcase__rating-{{ ai_gen_id }}">
+            <span class="dp-showcase__stars-{{ ai_gen_id }}">★★★★★</span>
+            <span>({{ dynamic_review_count }} reviews)</span>
+          </div>
+        {% endif %}
+
+        {% if block.settings.trust_text != blank %}
+          <p class="dp-showcase__trust-{{ ai_gen_id }}">{{ block.settings.trust_text }}</p>
+        {% endif %}
+
+        {% form 'product', selected_product %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id-input>
+
+          {% if selected_product.variants.size > 1 %}
+            <span class="dp-showcase__edition-label-{{ ai_gen_id }}">{{ block.settings.edition_label }}</span>
+
+            <div class="dp-showcase__variants-{{ ai_gen_id }}">
+              {% for variant in selected_product.variants limit: 4 %}
+                <label class="dp-showcase__variant-{{ ai_gen_id }}">
+                  <input
+                    type="radio"
+                    name="edition-option-{{ ai_gen_id }}"
+                    value="{{ variant.id }}"
+                    data-variant-radio
+                    data-price-html="{{ variant.price | money | escape }}"
+                    data-available="{{ variant.available }}"
+                    data-url="{{ selected_product.url }}?variant={{ variant.id }}"
+                    data-featured-media-id="{% if variant.featured_media %}{{ variant.featured_media.id }}{% elsif variant.image %}{{ variant.image.id }}{% endif %}"
+                    {% if variant.id == current_variant.id %}checked{% endif %}
+                  >
+
+                  {% liquid
+                    assign variant_icon = blank
+                    case forloop.index
+                      when 1
+                        assign variant_icon = block.settings.variant_1_icon
+                      when 2
+                        assign variant_icon = block.settings.variant_2_icon
+                      when 3
+                        assign variant_icon = block.settings.variant_3_icon
+                      when 4
+                        assign variant_icon = block.settings.variant_4_icon
+                    endcase
+                  %}
+
+                  <span class="dp-showcase__variant-box-{{ ai_gen_id }}">
+                    {% if variant_icon != blank %}
+                      <img
+                        src="{{ variant_icon | image_url: width: 160 }}"
+                        alt="{{ variant.title | escape }}"
+                        loading="lazy"
+                        width="160"
+                        height="80"
+                      >
+                    {% endif %}
+                    <span>{{ variant.title }}</span>
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <p class="dp-showcase__price-{{ ai_gen_id }}" data-product-price>{{ current_variant.price | money }}</p>
+
+          <label class="dp-showcase__qty-label-{{ ai_gen_id }}" for="Quantity-{{ ai_gen_id }}">
+            {{ block.settings.quantity_label }}
+          </label>
+
+          <div class="dp-showcase__buy-row-{{ ai_gen_id }}">
+            <div class="dp-showcase__qty-{{ ai_gen_id }}">
+              <button type="button" class="dp-showcase__qty-btn-{{ ai_gen_id }}" data-qty-minus aria-label="Decrease quantity">−</button>
+              <input id="Quantity-{{ ai_gen_id }}" class="dp-showcase__qty-input-{{ ai_gen_id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric">
+              <button type="button" class="dp-showcase__qty-btn-{{ ai_gen_id }}" data-qty-plus aria-label="Increase quantity">+</button>
+            </div>
+
+            <button
+              type="submit"
+              name="add"
+              class="dp-showcase__add-{{ ai_gen_id }}"
+              data-add-button
+              {% unless current_variant.available %}disabled{% endunless %}
+            >
+              {% if current_variant.available %}
+                {{ block.settings.button_text }}
+              {% else %}
+                Sold out
+              {% endif %}
+            </button>
+          </div>
+
+          {% if block.settings.show_dynamic_checkout %}
+            <div class="dp-showcase__dynamic-{{ ai_gen_id }}">
+              {{ form | payment_button }}
+            </div>
+          {% endif %}
+        {% endform %}
+
+        {% if block.settings.payment_note != blank %}
+          <span class="dp-showcase__payment-note-{{ ai_gen_id }}">{{ block.settings.payment_note }}</span>
+        {% endif %}
+
+        {% if block.settings.show_features %}
+          <div class="dp-showcase__features-{{ ai_gen_id }}">
+            <div class="dp-showcase__feature-{{ ai_gen_id }}">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3Z" stroke-width="1.8"/><path d="M9 12l2 2 4-5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>{{ block.settings.feature_1 }}</span>
+            </div>
+
+            <div class="dp-showcase__feature-{{ ai_gen_id }}">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span>{{ block.settings.feature_2 }}</span>
+            </div>
+
+            <div class="dp-showcase__feature-{{ ai_gen_id }}">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12a7 7 0 0 1 14 0v4a3 3 0 0 1-3 3h-1" stroke-width="1.8"/><path d="M5 12v4h3v-5H5Zm14 0v4h-3v-5h3Z" stroke-width="1.8"/></svg>
+              <span>{{ block.settings.feature_3 }}</span>
+            </div>
+
+            <div class="dp-showcase__feature-{{ ai_gen_id }}">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 4l2.2 4.6 5 .7-3.6 3.5.8 5-4.4-2.4-4.4 2.4.8-5L4.8 9.3l5-.7L12 4Z" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              <span>{{ block.settings.feature_4 }}</span>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="dp-showcase__empty-{{ ai_gen_id }}">Select a product.</div>
+  {% endif %}
+</dp-showcase-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class DPShowcase{{ ai_gen_id }} extends HTMLElement {
+      connectedCallback() {
+        const track = this.querySelector('[data-media-track]');
+        const slides = this.querySelectorAll('[data-media-slide]');
+        const thumbs = this.querySelectorAll('[data-media-thumb]');
+        const counter = this.querySelector('[data-media-counter]');
+        const centerPlay = this.querySelector('[data-center-play]');
+
+        const qtyInput = this.querySelector('input[name="quantity"]');
+        const minus = this.querySelector('[data-qty-minus]');
+        const plus = this.querySelector('[data-qty-plus]');
+        const variantInput = this.querySelector('[data-variant-id-input]');
+        const price = this.querySelector('[data-product-price]');
+        const addButton = this.querySelector('[data-add-button]');
+        const radios = this.querySelectorAll('[data-variant-radio]');
+
+        const updateMedia = () => {
+          if (!track || !slides.length) return;
+
+          const width = slides[0].offsetWidth || track.clientWidth;
+          const rawIndex = Math.round(track.scrollLeft / width);
+          const index = Math.max(0, Math.min(slides.length - 1, rawIndex));
+          const activeSlide = slides[index];
+          const activeType = activeSlide ? activeSlide.dataset.mediaType : '';
+
+          if (counter) counter.textContent = (index + 1) + '/' + slides.length;
+
+          thumbs.forEach((thumb, i) => {
+            thumb.classList.toggle('is-active', i === index);
+          });
+
+          if (centerPlay) {
+            centerPlay.classList.toggle('is-visible', activeType === 'video');
+          }
+        };
+
+        const goToMedia = (index) => {
+          if (!track || !slides.length) return;
+
+          const width = slides[0].offsetWidth || track.clientWidth;
+          track.scrollTo({
+            left: width * index,
+            behavior: 'smooth'
+          });
+        };
+
+        thumbs.forEach((thumb) => {
+          thumb.addEventListener('click', () => {
+            goToMedia(parseInt(thumb.dataset.index || '0', 10));
+          });
+        });
+
+        if (track) {
+          track.addEventListener('scroll', () => window.requestAnimationFrame(updateMedia));
+          window.addEventListener('resize', updateMedia);
+          updateMedia();
+        }
+
+        if (minus && qtyInput) {
+          minus.addEventListener('click', () => {
+            const current = parseInt(qtyInput.value || '1', 10);
+            qtyInput.value = Math.max(1, current - 1);
+          });
+        }
+
+        if (plus && qtyInput) {
+          plus.addEventListener('click', () => {
+            const current = parseInt(qtyInput.value || '1', 10);
+            qtyInput.value = current + 1;
+          });
+        }
+
+        radios.forEach((radio) => {
+          radio.addEventListener('change', () => {
+            if (!radio.checked) return;
+
+            const available = radio.dataset.available === 'true';
+
+            if (variantInput) {
+              variantInput.value = radio.value;
+            }
+
+            if (price) {
+              price.innerHTML = radio.dataset.priceHtml || '';
+            }
+
+            if (addButton) {
+              addButton.disabled = !available;
+              addButton.textContent = available ? '{{ block.settings.button_text | escape }}' : 'Sold out';
+            }
+
+            const featuredMediaId = radio.dataset.featuredMediaId;
+
+            if (featuredMediaId && slides.length) {
+              const targetIndex = Array.from(slides).findIndex((slide) => {
+                return slide.dataset.mediaId === featuredMediaId;
+              });
+
+              if (targetIndex > -1) {
+                goToMedia(targetIndex);
+              }
+            }
+
+            if (radio.dataset.url) {
+              window.history.replaceState({}, '', radio.dataset.url);
+            }
+          });
+        });
+
+        const urlVariantId = new URLSearchParams(window.location.search).get('variant');
+
+        if (urlVariantId) {
+          const matchingRadio = Array.from(radios).find((radio) => radio.value === urlVariantId);
+
+          if (matchingRadio) {
+            matchingRadio.checked = true;
+            matchingRadio.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      }
+    }
+
+    if (!customElements.get('dp-showcase-{{ ai_gen_id }}')) {
+      customElements.define('dp-showcase-{{ ai_gen_id }}', DPShowcase{{ ai_gen_id }});
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product showcase",
+  "tag": null,
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product" },
+
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "trust_text", "label": "Trust text", "default": "Works with all 1:64 diecast cars" },
+    { "type": "text", "id": "review_count", "label": "Review count", "default": "128" },
+    { "type": "text", "id": "edition_label", "label": "Edition label", "default": "Choose your edition" },
+    { "type": "text", "id": "quantity_label", "label": "Quantity label", "default": "Quantity" },
+    { "type": "text", "id": "button_text", "label": "Add button text", "default": "Add to cart" },
+    { "type": "text", "id": "payment_note", "label": "Payment note", "default": "More payment options" },
+
+    { "type": "checkbox", "id": "show_rating", "label": "Show rating", "default": true },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout", "default": true },
+    { "type": "checkbox", "id": "show_features", "label": "Show feature row", "default": true },
+    { "type": "checkbox", "id": "show_counter", "label": "Show media counter", "default": true },
+    { "type": "checkbox", "id": "show_zoom", "label": "Show zoom icon", "default": true },
+    { "type": "checkbox", "id": "show_center_play", "label": "Show center play overlay", "default": true },
+
+    { "type": "image_picker", "id": "variant_1_icon", "label": "Variant 1 icon" },
+    { "type": "image_picker", "id": "variant_2_icon", "label": "Variant 2 icon" },
+    { "type": "image_picker", "id": "variant_3_icon", "label": "Variant 3 icon" },
+    { "type": "image_picker", "id": "variant_4_icon", "label": "Variant 4 icon" },
+
+    { "type": "text", "id": "feature_1", "label": "Feature 1", "default": "Secure Checkout" },
+    { "type": "text", "id": "feature_2", "label": "Feature 2", "default": "10,000+ Happy Collectors" },
+    { "type": "text", "id": "feature_3", "label": "Feature 3", "default": "24/7 Support" },
+    { "type": "text", "id": "feature_4", "label": "Feature 4", "default": "Premium Quality" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "label": "Max width", "min": 900, "max": 1700, "step": 20, "unit": "px", "default": 1320 },
+    { "type": "range", "id": "media_width", "label": "Media column width", "min": 45, "max": 70, "step": 1, "unit": "%", "default": 54 },
+    { "type": "range", "id": "column_gap", "label": "Column gap", "min": 10, "max": 80, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "desktop_padding_top", "label": "Desktop top padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "desktop_padding_bottom", "label": "Desktop bottom padding", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "desktop_padding_x", "label": "Desktop side padding", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "info_top_padding", "label": "Info top padding", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 0 },
+
+    {
+      "type": "select",
+      "id": "desktop_media_aspect",
+      "label": "Desktop media shape",
+      "options": [
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "4 / 3", "label": "4:3" },
+        { "value": "5 / 4", "label": "5:4" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "select",
+      "id": "mobile_media_aspect",
+      "label": "Mobile media shape",
+      "options": [
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "4 / 3", "label": "4:3" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "select",
+      "id": "thumb_aspect",
+      "label": "Thumbnail shape",
+      "options": [
+        { "value": "16 / 9", "label": "16:9" },
+        { "value": "4 / 3", "label": "4:3" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "1 / 1"
+    },
+    { "type": "range", "id": "thumbs_per_row", "label": "Desktop thumbnails per row", "min": 3, "max": 8, "step": 1, "default": 5 },
+    { "type": "range", "id": "thumb_gap", "label": "Thumbnail gap", "min": 4, "max": 20, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "thumb_top_gap", "label": "Thumbnail top gap", "min": 4, "max": 30, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "media_radius", "label": "Desktop media radius", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 7 },
+    { "type": "range", "id": "mobile_media_radius", "label": "Mobile media radius", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 7 },
+    { "type": "range", "id": "thumb_radius", "label": "Thumbnail radius", "min": 0, "max": 16, "step": 1, "unit": "px", "default": 4 },
+
+    { "type": "header", "content": "Mobile layout" },
+    { "type": "range", "id": "mobile_max_width", "label": "Mobile max width", "min": 300, "max": 600, "step": 10, "unit": "px", "default": 430 },
+    { "type": "range", "id": "mobile_padding_top", "label": "Mobile top padding", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Mobile bottom padding", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_padding_x", "label": "Mobile side padding", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "mobile_media_gap", "label": "Mobile media bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 6 },
+
+    { "type": "header", "content": "Fonts" },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "assistant_n7" },
+    { "type": "font_picker", "id": "body_font", "label": "Body font", "default": "assistant_n4" },
+
+    { "type": "header", "content": "Title typography" },
+    { "type": "range", "id": "title_size", "label": "Desktop title size", "min": 18, "max": 60, "step": 1, "unit": "px", "default": 30 },
+    { "type": "range", "id": "mobile_title_size", "label": "Mobile title size", "min": 16, "max": 40, "step": 1, "unit": "px", "default": 24 },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" },
+        { "value": "800", "label": "800" },
+        { "value": "900", "label": "900" }
+      ],
+      "default": "800"
+    },
+    { "type": "range", "id": "title_spacing", "label": "Desktop title letter spacing", "min": 0, "max": 4, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "mobile_title_spacing", "label": "Mobile title letter spacing", "min": 0, "max": 4, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "title_line_height", "label": "Desktop title line height", "min": 0.8, "max": 2, "step": 0.1, "default": 1 },
+    { "type": "range", "id": "mobile_title_line_height", "label": "Mobile title line height", "min": 0.8, "max": 2, "step": 0.1, "default": 1 },
+    { "type": "range", "id": "title_gap", "label": "Desktop title bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "mobile_title_gap", "label": "Mobile title bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 4 },
+
+    { "type": "header", "content": "Rating and trust typography" },
+    { "type": "range", "id": "rating_size", "label": "Desktop rating size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_rating_size", "label": "Mobile rating size", "min": 8, "max": 15, "step": 1, "unit": "px", "default": 11 },
+    {
+      "type": "select",
+      "id": "rating_weight",
+      "label": "Rating weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" }
+      ],
+      "default": "400"
+    },
+    { "type": "range", "id": "rating_spacing", "label": "Rating letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "rating_gap", "label": "Desktop rating bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 7 },
+    { "type": "range", "id": "mobile_rating_gap", "label": "Mobile rating bottom gap", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 5 },
+
+    { "type": "range", "id": "trust_size", "label": "Desktop trust size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "mobile_trust_size", "label": "Mobile trust size", "min": 9, "max": 16, "step": 1, "unit": "px", "default": 12 },
+    {
+      "type": "select",
+      "id": "trust_weight",
+      "label": "Trust weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" }
+      ],
+      "default": "600"
+    },
+    { "type": "range", "id": "trust_spacing", "label": "Trust letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "trust_gap", "label": "Desktop trust bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "mobile_trust_gap", "label": "Mobile trust bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 9 },
+
+    { "type": "header", "content": "Variant typography" },
+    { "type": "range", "id": "label_size", "label": "Desktop label size", "min": 9, "max": 18, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "mobile_label_size", "label": "Mobile label size", "min": 8, "max": 16, "step": 1, "unit": "px", "default": 11 },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" },
+        { "value": "800", "label": "800" },
+        { "value": "900", "label": "900" }
+      ],
+      "default": "800"
+    },
+    { "type": "range", "id": "label_spacing", "label": "Label spacing", "min": 0, "max": 4, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "label_gap", "label": "Desktop label bottom gap", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "mobile_label_gap", "label": "Mobile label bottom gap", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 7 },
+
+    { "type": "range", "id": "variant_height", "label": "Desktop variant height", "min": 34, "max": 70, "step": 2, "unit": "px", "default": 50 },
+    { "type": "range", "id": "mobile_variant_height", "label": "Mobile variant height", "min": 30, "max": 60, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "variant_gap", "label": "Desktop variant gap", "min": 4, "max": 20, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "mobile_variant_gap", "label": "Mobile variant gap", "min": 4, "max": 18, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "variant_inner_gap", "label": "Desktop variant inner gap", "min": 2, "max": 16, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "mobile_variant_inner_gap", "label": "Mobile variant inner gap", "min": 2, "max": 12, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "variant_size", "label": "Desktop variant text size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_variant_size", "label": "Mobile variant text size", "min": 7, "max": 15, "step": 1, "unit": "px", "default": 10 },
+    {
+      "type": "select",
+      "id": "variant_weight",
+      "label": "Variant text weight",
+      "options": [
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" },
+        { "value": "800", "label": "800" },
+        { "value": "900", "label": "900" }
+      ],
+      "default": "800"
+    },
+    { "type": "range", "id": "variant_spacing", "label": "Variant letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "variant_bottom_gap", "label": "Desktop variant bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_variant_bottom_gap", "label": "Mobile variant bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "variant_radius", "label": "Variant border radius", "min": 0, "max": 16, "step": 1, "unit": "px", "default": 5 },
+    { "type": "range", "id": "variant_icon_width", "label": "Desktop variant icon width", "min": 20, "max": 90, "step": 2, "unit": "px", "default": 46 },
+    { "type": "range", "id": "variant_icon_height", "label": "Desktop variant icon height", "min": 10, "max": 60, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "mobile_variant_icon_width", "label": "Mobile variant icon width", "min": 18, "max": 70, "step": 2, "unit": "px", "default": 38 },
+    { "type": "range", "id": "mobile_variant_icon_height", "label": "Mobile variant icon height", "min": 10, "max": 50, "step": 2, "unit": "px", "default": 20 },
+
+    { "type": "header", "content": "Price typography" },
+    { "type": "range", "id": "price_size", "label": "Desktop price size", "min": 14, "max": 42, "step": 1, "unit": "px", "default": 24 },
+    { "type": "range", "id": "mobile_price_size", "label": "Mobile price size", "min": 14, "max": 32, "step": 1, "unit": "px", "default": 21 },
+    {
+      "type": "select",
+      "id": "price_weight",
+      "label": "Price weight",
+      "options": [
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" },
+        { "value": "800", "label": "800" },
+        { "value": "900", "label": "900" }
+      ],
+      "default": "800"
+    },
+    { "type": "range", "id": "price_spacing", "label": "Price spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "price_gap", "label": "Desktop price bottom gap", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "mobile_price_gap", "label": "Mobile price bottom gap", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 5 },
+
+    { "type": "header", "content": "Quantity and buttons" },
+    { "type": "range", "id": "qty_label_size", "label": "Desktop quantity label size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_qty_label_size", "label": "Mobile quantity label size", "min": 8, "max": 16, "step": 1, "unit": "px", "default": 11 },
+    {
+      "type": "select",
+      "id": "qty_label_weight",
+      "label": "Quantity label weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" }
+      ],
+      "default": "600"
+    },
+    { "type": "range", "id": "qty_label_spacing", "label": "Quantity label spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "qty_label_gap", "label": "Desktop quantity label bottom gap", "min": 0, "max": 16, "step": 1, "unit": "px", "default": 4 },
+    { "type": "range", "id": "mobile_qty_label_gap", "label": "Mobile quantity label bottom gap", "min": 0, "max": 16, "step": 1, "unit": "px", "default": 4 },
+
+    { "type": "range", "id": "button_height", "label": "Desktop button height", "min": 34, "max": 72, "step": 2, "unit": "px", "default": 54 },
+    { "type": "range", "id": "mobile_button_height", "label": "Mobile button height", "min": 32, "max": 60, "step": 2, "unit": "px", "default": 44 },
+    { "type": "range", "id": "buy_gap", "label": "Desktop buy row gap", "min": 4, "max": 30, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_buy_gap", "label": "Mobile buy row gap", "min": 4, "max": 24, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "buy_bottom_gap", "label": "Desktop buy row bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "mobile_buy_bottom_gap", "label": "Mobile buy row bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 8 },
+    { "type": "range", "id": "qty_button_width", "label": "Desktop quantity button width", "min": 24, "max": 60, "step": 2, "unit": "px", "default": 42 },
+    { "type": "range", "id": "mobile_qty_button_width", "label": "Mobile quantity button width", "min": 24, "max": 54, "step": 2, "unit": "px", "default": 34 },
+    { "type": "range", "id": "qty_input_width", "label": "Desktop quantity input width", "min": 30, "max": 70, "step": 2, "unit": "px", "default": 46 },
+    { "type": "range", "id": "mobile_qty_input_width", "label": "Mobile quantity input width", "min": 28, "max": 60, "step": 2, "unit": "px", "default": 38 },
+    { "type": "range", "id": "qty_button_size", "label": "Desktop quantity +/- size", "min": 10, "max": 26, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_qty_button_size", "label": "Mobile quantity +/- size", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "qty_input_size", "label": "Desktop quantity input size", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "mobile_qty_input_size", "label": "Mobile quantity input size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+
+    { "type": "range", "id": "button_size", "label": "Desktop add button text size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_button_size", "label": "Mobile add button text size", "min": 8, "max": 16, "step": 1, "unit": "px", "default": 10 },
+    {
+      "type": "select",
+      "id": "button_weight",
+      "label": "Add button weight",
+      "options": [
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" },
+        { "value": "800", "label": "800" },
+        { "value": "900", "label": "900" }
+      ],
+      "default": "700"
+    },
+    { "type": "range", "id": "button_spacing", "label": "Add button letter spacing", "min": 0, "max": 5, "step": 0.5, "unit": "px", "default": 0.5 },
+    { "type": "range", "id": "button_radius", "label": "Add button radius", "min": 0, "max": 18, "step": 1, "unit": "px", "default": 2 },
+
+    { "type": "range", "id": "dynamic_height", "label": "Desktop dynamic button height", "min": 34, "max": 72, "step": 2, "unit": "px", "default": 52 },
+    { "type": "range", "id": "mobile_dynamic_height", "label": "Mobile dynamic button height", "min": 32, "max": 60, "step": 2, "unit": "px", "default": 42 },
+    { "type": "range", "id": "dynamic_radius", "label": "Dynamic button radius", "min": 0, "max": 18, "step": 1, "unit": "px", "default": 4 },
+    { "type": "range", "id": "dynamic_gap", "label": "Dynamic button bottom gap", "min": 0, "max": 25, "step": 1, "unit": "px", "default": 8 },
+
+    { "type": "header", "content": "Payment note" },
+    { "type": "range", "id": "payment_note_size", "label": "Desktop payment note size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "mobile_payment_note_size", "label": "Mobile payment note size", "min": 8, "max": 16, "step": 1, "unit": "px", "default": 11 },
+    {
+      "type": "select",
+      "id": "payment_note_weight",
+      "label": "Payment note weight",
+      "options": [
+        { "value": "300", "label": "300" },
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" }
+      ],
+      "default": "400"
+    },
+    { "type": "range", "id": "payment_note_spacing", "label": "Payment note letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "payment_note_gap", "label": "Desktop payment note bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "mobile_payment_note_gap", "label": "Mobile payment note bottom gap", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 14 },
+
+    { "type": "header", "content": "Feature row" },
+    { "type": "range", "id": "feature_height", "label": "Desktop feature height", "min": 40, "max": 100, "step": 2, "unit": "px", "default": 68 },
+    { "type": "range", "id": "mobile_feature_height", "label": "Mobile feature height", "min": 36, "max": 90, "step": 2, "unit": "px", "default": 58 },
+    { "type": "range", "id": "feature_padding", "label": "Desktop feature padding", "min": 0, "max": 18, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "mobile_feature_padding", "label": "Mobile feature padding", "min": 0, "max": 14, "step": 1, "unit": "px", "default": 4 },
+    { "type": "range", "id": "feature_gap", "label": "Desktop feature gap", "min": 0, "max": 14, "step": 1, "unit": "px", "default": 5 },
+    { "type": "range", "id": "mobile_feature_gap", "label": "Mobile feature gap", "min": 0, "max": 12, "step": 1, "unit": "px", "default": 4 },
+    { "type": "range", "id": "feature_size", "label": "Desktop feature text size", "min": 7, "max": 15, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "mobile_feature_size", "label": "Mobile feature text size", "min": 6, "max": 13, "step": 1, "unit": "px", "default": 8 },
+    {
+      "type": "select",
+      "id": "feature_weight",
+      "label": "Feature text weight",
+      "options": [
+        { "value": "300", "label": "300" },
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" }
+      ],
+      "default": "400"
+    },
+    { "type": "range", "id": "feature_spacing", "label": "Feature letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "feature_line_height", "label": "Feature line height", "min": 1, "max": 2, "step": 0.1, "default": 1.2 },
+    { "type": "range", "id": "feature_icon_size", "label": "Desktop feature icon size", "min": 14, "max": 40, "step": 2, "unit": "px", "default": 26 },
+    { "type": "range", "id": "mobile_feature_icon_size", "label": "Mobile feature icon size", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 20 },
+
+    { "type": "header", "content": "Media controls" },
+    { "type": "range", "id": "play_size", "label": "Desktop center play size", "min": 30, "max": 110, "step": 2, "unit": "px", "default": 70 },
+    { "type": "range", "id": "mobile_play_size", "label": "Mobile center play size", "min": 30, "max": 80, "step": 2, "unit": "px", "default": 58 },
+    { "type": "range", "id": "counter_size", "label": "Desktop counter size", "min": 8, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_counter_size", "label": "Mobile counter size", "min": 8, "max": 16, "step": 1, "unit": "px", "default": 10 },
+    {
+      "type": "select",
+      "id": "counter_weight",
+      "label": "Counter weight",
+      "options": [
+        { "value": "400", "label": "400" },
+        { "value": "500", "label": "500" },
+        { "value": "600", "label": "600" },
+        { "value": "700", "label": "700" }
+      ],
+      "default": "600"
+    },
+    { "type": "range", "id": "counter_spacing", "label": "Counter letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "section_bg", "label": "Section background", "default": "#ffffff" },
+    { "type": "color", "id": "mobile_section_bg", "label": "Mobile section background", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#111111" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#111111" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#d6362f" },
+    { "type": "color", "id": "star_color", "label": "Star color", "default": "#111111" },
+    { "type": "color", "id": "variant_border", "label": "Variant border", "default": "#dddddd" },
+    { "type": "color", "id": "button_bg", "label": "Add button background", "default": "#c4312f" },
+    { "type": "color", "id": "button_color", "label": "Add button text", "default": "#ffffff" },
+    { "type": "color", "id": "button_hover_bg", "label": "Add button hover background", "default": "#a72725" },
+    { "type": "color", "id": "input_border", "label": "Quantity border", "default": "#dddddd" },
+    { "type": "color", "id": "payment_note_color", "label": "Payment note color", "default": "#444444" },
+    { "type": "color", "id": "feature_border", "label": "Feature border", "default": "#e5e5e5" }
+  ],
+  "presets": [
+    { "name": "Product showcase" }
+  ]
+}
+{% endschema %}

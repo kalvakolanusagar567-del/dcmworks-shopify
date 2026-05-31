@@ -1,0 +1,738 @@
+{% doc %}
+  @prompt
+    Dynamic editorial sidebar filters.
+    Desktop vertical sidebar.
+    Mobile horizontal top filter bar.
+    Sends selected filters to product grid.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  @media screen and (min-width: 750px) {
+    .shopify-block:has([data-editorial-sidebar]) {
+      float: left;
+      width: {{ block.settings.sidebar_width }}px;
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .ai-editorial-sidebar-{{ ai_gen_id }} {
+    display: block;
+    background: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    border-top: 1px solid {{ block.settings.border_color }};
+    border-right: 1px solid {{ block.settings.text_color }};
+    padding: {{ block.settings.desktop_padding_top }}px {{ block.settings.desktop_padding_x }}px {{ block.settings.desktop_padding_bottom }}px;
+    box-sizing: border-box;
+  }
+
+  .ai-editorial-sidebar-{{ ai_gen_id }} *,
+  .ai-editorial-sidebar-{{ ai_gen_id }} *::before,
+  .ai-editorial-sidebar-{{ ai_gen_id }} *::after {
+    box-sizing: border-box;
+  }
+
+  .ai-sidebar-header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    gap: 10px;
+  }
+
+  .ai-sidebar-title-wrap-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ai-sidebar-title-{{ ai_gen_id }},
+  .ai-sidebar-active-count-{{ ai_gen_id }},
+  .ai-sidebar-group-title-{{ ai_gen_id }} {
+    margin: 0;
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: 1;
+    letter-spacing: {{ block.settings.heading_spacing }}px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .ai-sidebar-active-count-{{ ai_gen_id }} {
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-sidebar-scroll-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-sidebar-group-{{ ai_gen_id }} {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid {{ block.settings.border_color }};
+  }
+
+  .ai-sidebar-group-title-{{ ai_gen_id }} {
+    margin-bottom: 14px;
+  }
+
+  .ai-sidebar-options-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ai-sidebar-option-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ai-sidebar-box-{{ ai_gen_id }} {
+    width: 11px;
+    height: 11px;
+    border: 1px solid {{ block.settings.text_color }};
+    display: block;
+    position: relative;
+    background: transparent;
+  }
+
+  .ai-sidebar-option-{{ ai_gen_id }}.is-checked .ai-sidebar-box-{{ ai_gen_id }} {
+    background: {{ block.settings.text_color }};
+  }
+
+  .ai-sidebar-option-{{ ai_gen_id }}.is-checked .ai-sidebar-box-{{ ai_gen_id }}::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    width: 3px;
+    height: 6px;
+    border: solid {{ block.settings.background_color }};
+    border-width: 0 1px 1px 0;
+    transform: rotate(45deg);
+  }
+
+  .ai-sidebar-label-{{ ai_gen_id }},
+  .ai-sidebar-count-{{ ai_gen_id }} {
+    font-size: {{ block.settings.option_size }}px;
+    line-height: 1.15;
+  }
+
+  .ai-sidebar-count-{{ ai_gen_id }} {
+    color: {{ block.settings.muted_color }};
+    text-align: right;
+    min-width: 16px;
+  }
+
+  .ai-sidebar-option-{{ ai_gen_id }}.is-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .ai-sidebar-reset-{{ ai_gen_id }} {
+    width: 100%;
+    border: 1px solid {{ block.settings.text_color }};
+    background: transparent;
+    color: {{ block.settings.text_color }};
+    cursor: pointer;
+    padding: 12px 10px;
+    font-size: {{ block.settings.reset_size }}px;
+    letter-spacing: {{ block.settings.reset_spacing }}px;
+    line-height: 1;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .ai-sidebar-reset-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.text_color }};
+    color: {{ block.settings.background_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .shopify-block:has([data-editorial-sidebar]) {
+      float: none !important;
+      width: 100% !important;
+      clear: both !important;
+      margin: 0 !important;
+    }
+
+    .ai-editorial-sidebar-{{ ai_gen_id }} {
+      width: 100% !important;
+      border-top: 1px solid {{ block.settings.border_color }};
+      border-right: 0 !important;
+      border-bottom: 1px solid {{ block.settings.border_color }};
+      padding: 0 !important;
+      overflow: hidden;
+      background: {{ block.settings.background_color }};
+    }
+
+    .ai-sidebar-mobile-top-{{ ai_gen_id }} {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 8px;
+      border-bottom: 1px solid {{ block.settings.border_color }};
+    }
+
+    .ai-sidebar-header-{{ ai_gen_id }} {
+      width: auto;
+      min-width: 0;
+      margin: 0;
+      flex: 1;
+    }
+
+    .ai-sidebar-title-wrap-{{ ai_gen_id }} {
+      gap: 8px;
+    }
+
+    .ai-sidebar-title-{{ ai_gen_id }},
+    .ai-sidebar-active-count-{{ ai_gen_id }} {
+      font-size: 8px !important;
+      letter-spacing: 4px !important;
+      line-height: 1;
+    }
+
+    .ai-sidebar-mobile-sort-{{ ai_gen_id }} {
+      display: flex !important;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      font-size: 8px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ai-sidebar-mobile-icons-{{ ai_gen_id }} {
+      display: flex;
+      gap: 5px;
+    }
+
+    .ai-sidebar-mobile-icon-{{ ai_gen_id }} {
+      width: 19px;
+      height: 19px;
+      border: 1px solid {{ block.settings.text_color }};
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .ai-sidebar-mobile-icon-{{ ai_gen_id }}.active {
+      background: {{ block.settings.text_color }};
+      color: {{ block.settings.background_color }};
+    }
+
+    .ai-sidebar-scroll-wrap-{{ ai_gen_id }} {
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: 100%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px 8px;
+    }
+
+    .ai-sidebar-scroll-wrap-{{ ai_gen_id }}::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ai-sidebar-scroll-{{ ai_gen_id }} {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      width: max-content;
+      padding-bottom: 8px;
+    }
+
+    .ai-sidebar-scroll-wrap-{{ ai_gen_id }}::after {
+      content: "";
+      display: block;
+      width: 190px;
+      height: 10px;
+      border-radius: 999px;
+      background: {{ block.settings.mobile_scrollbar_color }};
+      margin-top: 8px;
+    }
+
+    .ai-sidebar-group-{{ ai_gen_id }} {
+      min-width: 145px;
+      margin: 0;
+      padding: 0 22px 0 0;
+      border-bottom: 0;
+      border-right: 1px solid {{ block.settings.border_color }};
+    }
+
+    .ai-sidebar-group:last-of-type {
+      border-right: 0;
+    }
+
+    .ai-sidebar-group-title-{{ ai_gen_id }} {
+      font-size: 8px !important;
+      letter-spacing: 4px !important;
+      margin-bottom: 10px;
+    }
+
+    .ai-sidebar-options-{{ ai_gen_id }} {
+      gap: 8px;
+    }
+
+    .ai-sidebar-option-{{ ai_gen_id }} {
+      grid-template-columns: 11px minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .ai-sidebar-label-{{ ai_gen_id }},
+    .ai-sidebar-count-{{ ai_gen_id }} {
+      font-size: 10px !important;
+    }
+
+    .ai-sidebar-box-{{ ai_gen_id }} {
+      width: 10px;
+      height: 10px;
+    }
+
+    .ai-sidebar-reset-{{ ai_gen_id }} {
+      width: 145px;
+      flex: 0 0 auto;
+      align-self: flex-start;
+      padding: 10px 8px;
+      font-size: 8px !important;
+      letter-spacing: 2px !important;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .ai-sidebar-mobile-sort-{{ ai_gen_id }} {
+      display: none !important;
+    }
+
+    .ai-sidebar-scroll-wrap-{{ ai_gen_id }} {
+      display: block;
+    }
+  }
+{% endstyle %}
+
+<editorial-filter-sidebar-{{ ai_gen_id }}
+  class="ai-editorial-sidebar-{{ ai_gen_id }}"
+  data-editorial-sidebar
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-sidebar-mobile-top-{{ ai_gen_id }}">
+    <div class="ai-sidebar-header-{{ ai_gen_id }}">
+      <div class="ai-sidebar-title-wrap-{{ ai_gen_id }}">
+        <h3 class="ai-sidebar-title-{{ ai_gen_id }}">{{ block.settings.filter_title }}</h3>
+        <span class="ai-sidebar-active-count-{{ ai_gen_id }}">+ 0</span>
+      </div>
+    </div>
+
+    <div class="ai-sidebar-mobile-sort-{{ ai_gen_id }}">
+      <span>{{ block.settings.mobile_sort_text }}</span>
+      <span>↓</span>
+      <div class="ai-sidebar-mobile-icons-{{ ai_gen_id }}">
+        <span class="ai-sidebar-mobile-icon-{{ ai_gen_id }}">□</span>
+        <span class="ai-sidebar-mobile-icon-{{ ai_gen_id }} active">▦</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-sidebar-scroll-wrap-{{ ai_gen_id }}">
+    <div class="ai-sidebar-scroll-{{ ai_gen_id }}">
+      <div class="ai-sidebar-group-{{ ai_gen_id }}">
+        <h4 class="ai-sidebar-group-title-{{ ai_gen_id }}">{{ block.settings.series_title }}</h4>
+        <div class="ai-sidebar-options-{{ ai_gen_id }}">
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="series" data-filter-value="all">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">All</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="series:all">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="series" data-filter-value="s01-driftpad">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">S01 · DriftPad</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="series:s01-driftpad">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="series" data-filter-value="s02-garage">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">S02 · Garage</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="series:s02-garage">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="series" data-filter-value="accessories">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">Accessories</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="series:accessories">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-sidebar-group-{{ ai_gen_id }}">
+        <h4 class="ai-sidebar-group-title-{{ ai_gen_id }}">{{ block.settings.scale_title }}</h4>
+        <div class="ai-sidebar-options-{{ ai_gen_id }}">
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="scale" data-filter-value="1-64">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">1:64</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="scale:1-64">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="scale" data-filter-value="static">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">Static</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="scale:static">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="scale" data-filter-value="none">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">—</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="scale:none">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-sidebar-group-{{ ai_gen_id }}">
+        <h4 class="ai-sidebar-group-title-{{ ai_gen_id }}">{{ block.settings.edition_title }}</h4>
+        <div class="ai-sidebar-options-{{ ai_gen_id }}">
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="edition" data-filter-value="standard">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">Standard</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="edition:standard">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="edition" data-filter-value="limited">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">Limited</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="edition:limited">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-sidebar-group-{{ ai_gen_id }}">
+        <h4 class="ai-sidebar-group-title-{{ ai_gen_id }}">{{ block.settings.price_title }}</h4>
+        <div class="ai-sidebar-options-{{ ai_gen_id }}">
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="price" data-filter-value="under-30">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">Under $30</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="price:under-30">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="price" data-filter-value="30-100">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">$30–$100</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="price:30-100">0</span>
+          </div>
+
+          <div class="ai-sidebar-option-{{ ai_gen_id }}" data-filter-group="price" data-filter-value="100-plus">
+            <span class="ai-sidebar-box-{{ ai_gen_id }}"></span>
+            <span class="ai-sidebar-label-{{ ai_gen_id }}">$100+</span>
+            <span class="ai-sidebar-count-{{ ai_gen_id }}" data-count-for="price:100-plus">0</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="ai-sidebar-reset-{{ ai_gen_id }}" type="button" data-reset>
+        {{ block.settings.reset_text }}
+      </button>
+    </div>
+  </div>
+</editorial-filter-sidebar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class EditorialFilterSidebar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.selected = {};
+      }
+
+      connectedCallback() {
+        this.options = Array.from(this.querySelectorAll('[data-filter-group][data-filter-value]'));
+        this.resetButton = this.querySelector('[data-reset]');
+        this.activeCount = this.querySelector('.ai-sidebar-active-count-{{ ai_gen_id }}');
+
+        this.options.forEach((option) => {
+          option.addEventListener('click', () => this.toggleOption(option));
+        });
+
+        if (this.resetButton) {
+          this.resetButton.addEventListener('click', () => this.reset());
+        }
+
+        window.addEventListener('editorialProductCounts', (event) => {
+          this.updateCounts(event.detail.counts || {});
+        });
+
+        window.dispatchEvent(new CustomEvent('editorialFiltersReady'));
+      }
+
+      toggleOption(option) {
+        const group = option.dataset.filterGroup;
+        const value = option.dataset.filterValue;
+
+        if (value === 'all') {
+          delete this.selected[group];
+
+          this.options
+            .filter((item) => item.dataset.filterGroup === group)
+            .forEach((item) => item.classList.remove('is-checked'));
+        } else {
+          if (!this.selected[group]) {
+            this.selected[group] = [];
+          }
+
+          const index = this.selected[group].indexOf(value);
+
+          if (index > -1) {
+            this.selected[group].splice(index, 1);
+            option.classList.remove('is-checked');
+          } else {
+            this.selected[group].push(value);
+            option.classList.add('is-checked');
+          }
+
+          if (this.selected[group].length === 0) {
+            delete this.selected[group];
+          }
+
+          this.options
+            .filter((item) => item.dataset.filterGroup === group && item.dataset.filterValue === 'all')
+            .forEach((item) => item.classList.remove('is-checked'));
+        }
+
+        this.dispatchFilters();
+      }
+
+      reset() {
+        this.selected = {};
+        this.options.forEach((option) => option.classList.remove('is-checked'));
+        this.dispatchFilters();
+      }
+
+      dispatchFilters() {
+        let count = 0;
+
+        Object.keys(this.selected).forEach((group) => {
+          count += this.selected[group].length;
+        });
+
+        if (this.activeCount) {
+          this.activeCount.textContent = '+ ' + count;
+        }
+
+        window.dispatchEvent(new CustomEvent('editorialFiltersChanged', {
+          detail: {
+            filters: this.selected
+          }
+        }));
+      }
+
+      updateCounts(counts) {
+        this.options.forEach((option) => {
+          const group = option.dataset.filterGroup;
+          const value = option.dataset.filterValue;
+          const key = group + ':' + value;
+          const countEl = this.querySelector('[data-count-for="' + key + '"]');
+
+          if (!countEl) return;
+
+          const count = counts[key] || 0;
+          countEl.textContent = count;
+
+          if (value !== 'all') {
+            option.classList.toggle('is-disabled', count === 0);
+          }
+        });
+      }
+    }
+
+    customElements.define('editorial-filter-sidebar-{{ ai_gen_id }}', EditorialFilterSidebar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Editorial filters",
+  "settings": [
+    {
+      "type": "range",
+      "id": "sidebar_width",
+      "label": "Desktop sidebar width",
+      "min": 140,
+      "max": 280,
+      "step": 10,
+      "unit": "px",
+      "default": 190
+    },
+    {
+      "type": "text",
+      "id": "filter_title",
+      "label": "Filter title",
+      "default": "FILTER"
+    },
+    {
+      "type": "text",
+      "id": "mobile_sort_text",
+      "label": "Mobile sort text",
+      "default": "SORT · NEWEST"
+    },
+    {
+      "type": "text",
+      "id": "series_title",
+      "label": "Series title",
+      "default": "SERIES"
+    },
+    {
+      "type": "text",
+      "id": "scale_title",
+      "label": "Scale title",
+      "default": "SCALE"
+    },
+    {
+      "type": "text",
+      "id": "edition_title",
+      "label": "Edition title",
+      "default": "EDITION"
+    },
+    {
+      "type": "text",
+      "id": "price_title",
+      "label": "Price title",
+      "default": "PRICE"
+    },
+    {
+      "type": "text",
+      "id": "reset_text",
+      "label": "Reset text",
+      "default": "RESET FILTERS"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_x",
+      "label": "Desktop side padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading spacing",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "option_size",
+      "label": "Option size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "reset_size",
+      "label": "Reset size",
+      "min": 6,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "range",
+      "id": "reset_spacing",
+      "label": "Reset spacing",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted",
+      "default": "#8f8678"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#df3a1d"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#d8d0c4"
+    },
+    {
+      "type": "color",
+      "id": "mobile_scrollbar_color",
+      "label": "Mobile scrollbar",
+      "default": "#8a8a8a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial filters"
+    }
+  ]
+}
+{% endschema %}

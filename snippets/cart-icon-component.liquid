@@ -1,0 +1,38 @@
+{%- doc -%}
+  Renders the cart text, which displays the number of items in the cart.
+{%- enddoc -%}
+
+<cart-icon
+  class="
+    header-actions__cart-icon
+    {% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}
+  "
+  data-testid="cart-icon"
+>
+  <span class="header-action-text" aria-hidden="true">
+    Cart ({{ cart.item_count }})
+  </span>
+</cart-icon>
+
+{% stylesheet %}
+.header-actions__cart-icon {
+  position: static !important;
+  width: auto !important;
+  min-width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  --cart-bubble-size: auto !important;
+  --cart-bubble-top: 0 !important;
+  --cart-bubble-right: 0 !important;
+}
+
+
+
+.header-actions__action {
+  align-items: center !important;
+}
+{% endstylesheet %}

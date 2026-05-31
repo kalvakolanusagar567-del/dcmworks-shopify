@@ -1,0 +1,1047 @@
+{% doc %}
+  @prompt
+    Dynamic editorial collection hero.
+    Wrapper is responsive 1200px max.
+    Section stays 100%.
+    Desktop columns are 80% left and 20% right.
+    Mobile has compact bottom stats row.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% liquid
+  assign current_collection = collection
+
+  if current_collection == blank and block.settings.manual_collection != blank
+    assign current_collection = block.settings.manual_collection
+  endif
+
+  if current_collection == blank and product.collections.first != blank
+    assign current_collection = product.collections.first
+  endif
+
+  assign product_count = 0
+  assign latest_updated_at = blank
+
+  if current_collection != blank
+    assign product_count = current_collection.products_count
+
+    for item in current_collection.products
+      if latest_updated_at == blank
+        assign latest_updated_at = item.updated_at
+      elsif item.updated_at > latest_updated_at
+        assign latest_updated_at = item.updated_at
+      endif
+    endfor
+  endif
+
+  assign count_display = product_count
+
+  if product_count < 10
+    assign count_display = product_count | prepend: '0'
+  endif
+
+  if product_count == 1
+    assign piece_word = 'piece'
+  else
+    assign piece_word = 'pieces'
+  endif
+
+  assign updated_desktop = 'updated · today'
+  assign updated_mobile = 'updated · today'
+
+  if latest_updated_at != blank
+    assign latest_seconds = latest_updated_at | date: '%s' | plus: 0
+    assign now_seconds = 'now' | date: '%s' | plus: 0
+    assign diff_seconds = now_seconds | minus: latest_seconds
+    assign diff_days = diff_seconds | divided_by: 86400
+
+    if diff_days <= 0
+      assign updated_desktop = 'updated · today'
+      assign updated_mobile = 'updated · today'
+    elsif diff_days == 1
+      assign updated_desktop = 'updated · 01 day ago'
+      assign updated_mobile = 'updated · 1D ago'
+    elsif diff_days < 10
+      assign updated_desktop = 'updated · 0' | append: diff_days | append: ' days ago'
+      assign updated_mobile = 'updated · ' | append: diff_days | append: 'D ago'
+    else
+      assign updated_desktop = 'updated · ' | append: diff_days | append: ' days ago'
+      assign updated_mobile = 'updated · ' | append: diff_days | append: 'D ago'
+    endif
+  endif
+
+  assign dynamic_description = block.settings.description
+  assign dynamic_description = dynamic_description | replace: '[count]', count_display
+  assign dynamic_description = dynamic_description | replace: '[pieces]', piece_word
+%}
+
+{% style %}
+  {{ block.settings.kicker_font | font_face }}
+  {{ block.settings.title_font | font_face }}
+  {{ block.settings.body_font | font_face }}
+  {{ block.settings.stat_font | font_face }}
+
+  .shopify-block:has(.ai-collection-editorial-{{ ai_gen_id }}) {
+    width: min(100%, {{ block.settings.wrapper_max_width }}px) !important;
+    max-width: {{ block.settings.wrapper_max_width }}px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .ai-collection-editorial-{{ ai_gen_id }} {
+    width: 100%;
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.desktop_padding_top }}px {{ block.settings.desktop_padding_sides }}px {{ block.settings.desktop_padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .ai-collection-editorial-{{ ai_gen_id }} *,
+  .ai-collection-editorial-{{ ai_gen_id }} *::before,
+  .ai-collection-editorial-{{ ai_gen_id }} *::after {
+    box-sizing: border-box;
+  }
+
+  .ai-collection-editorial-{{ ai_gen_id }}::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient({{ block.settings.grid_color }} 1px, transparent 1px),
+      linear-gradient(90deg, {{ block.settings.grid_color }} 1px, transparent 1px);
+    background-size: {{ block.settings.grid_size }}px {{ block.settings.grid_size }}px;
+    opacity: {{ block.settings.grid_opacity | divided_by: 100.0 }};
+  }
+
+  .ai-collection-editorial__inner-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ai-collection-editorial__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 80% 20%;
+    gap: 0;
+    width: 100%;
+    align-items: start;
+  }
+
+  .ai-collection-editorial__left-{{ ai_gen_id }} {
+    min-width: 0;
+    max-width: 100%;
+    padding-right: {{ block.settings.left_right_space }}px;
+  }
+
+  .ai-collection-editorial__right-{{ ai_gen_id }} {
+    width: 100%;
+    min-width: 0;
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-top: {{ block.settings.right_top_offset }}px;
+  }
+
+  .ai-collection-editorial__kicker-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.kicker_bottom_gap }}px;
+    font-family: {{ block.settings.kicker_font.family }}, {{ block.settings.kicker_font.fallback_families }};
+    font-style: {{ block.settings.kicker_font.style }};
+    font-weight: {{ block.settings.kicker_weight }};
+    font-size: {{ block.settings.kicker_size }}px;
+    line-height: 1.2;
+    letter-spacing: {{ block.settings.kicker_letter_spacing }}px;
+    color: {{ block.settings.accent_color }};
+    text-transform: uppercase;
+  }
+
+  .ai-collection-editorial__title-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.title_bottom_gap }}px;
+    font-family: {{ block.settings.title_font.family }}, {{ block.settings.title_font.fallback_families }};
+    font-style: {{ block.settings.title_font.style }};
+    font-weight: {{ block.settings.title_weight }};
+    font-size: {{ block.settings.title_size }}px;
+    line-height: {{ block.settings.title_line_height }};
+    letter-spacing: {{ block.settings.title_letter_spacing }}px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-collection-editorial__title-{{ ai_gen_id }} p {
+    margin: 0;
+  }
+
+  .ai-collection-editorial__title-{{ ai_gen_id }} em {
+    color: {{ block.settings.accent_color }};
+    font-style: italic;
+    font-weight: {{ block.settings.title_italic_weight }};
+  }
+
+  .ai-collection-editorial__description-{{ ai_gen_id }} {
+    margin: 0;
+    max-width: {{ block.settings.description_width }}px;
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-style: {{ block.settings.body_font.style }};
+    font-weight: {{ block.settings.body_weight }};
+    font-size: {{ block.settings.description_size }}px;
+    line-height: 1.35;
+    letter-spacing: 0;
+    color: {{ block.settings.description_color }};
+  }
+
+  .ai-collection-editorial__note-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.note_bottom_gap }}px;
+    text-align: right;
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-style: italic;
+    font-weight: 400;
+    font-size: {{ block.settings.note_size }}px;
+    line-height: 1.15;
+    letter-spacing: 0.3px;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-collection-editorial__stat-number-{{ ai_gen_id }} {
+    margin: 0 0 12px;
+    font-family: {{ block.settings.stat_font.family }}, {{ block.settings.stat_font.fallback_families }};
+    font-style: {{ block.settings.stat_font.style }};
+    font-weight: {{ block.settings.stat_weight }};
+    font-size: {{ block.settings.stat_number_size }}px;
+    line-height: 1;
+    letter-spacing: {{ block.settings.stat_number_spacing }}px;
+    color: {{ block.settings.text_color }};
+    text-align: right;
+  }
+
+  .ai-collection-editorial__stat-label-{{ ai_gen_id }} {
+    width: 100%;
+    margin: 0 0 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid {{ block.settings.line_color }};
+    font-family: {{ block.settings.stat_font.family }}, {{ block.settings.stat_font.fallback_families }};
+    font-style: {{ block.settings.stat_font.style }};
+    font-weight: 400;
+    font-size: {{ block.settings.stat_label_size }}px;
+    line-height: 1.2;
+    letter-spacing: {{ block.settings.stat_label_spacing }}px;
+    text-transform: uppercase;
+    color: {{ block.settings.stat_label_color }};
+    text-align: right;
+  }
+
+  .ai-collection-editorial__updated-{{ ai_gen_id }} {
+    margin: 0;
+    max-width: 120px;
+    font-family: {{ block.settings.stat_font.family }}, {{ block.settings.stat_font.fallback_families }};
+    font-style: {{ block.settings.stat_font.style }};
+    font-weight: 400;
+    font-size: {{ block.settings.updated_size }}px;
+    line-height: 1.25;
+    letter-spacing: {{ block.settings.updated_spacing }}px;
+    text-transform: uppercase;
+    color: {{ block.settings.stat_label_color }};
+    text-align: right;
+  }
+
+  .ai-collection-editorial__updated-mobile-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .shopify-block:has(.ai-collection-editorial-{{ ai_gen_id }}) {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .ai-collection-editorial-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.mobile_padding_top }}px {{ block.settings.mobile_padding_sides }}px {{ block.settings.mobile_padding_bottom }}px;
+    }
+
+    .ai-collection-editorial__grid-{{ ai_gen_id }} {
+      display: block !important;
+    }
+
+    .ai-collection-editorial__left-{{ ai_gen_id }} {
+      width: 100%;
+      max-width: 100%;
+      padding-right: 0;
+    }
+
+    .ai-collection-editorial__kicker-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_kicker_size }}px;
+      letter-spacing: {{ block.settings.mobile_kicker_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_kicker_bottom_gap }}px;
+      white-space: nowrap;
+    }
+
+    .ai-collection-editorial__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_title_size }}px;
+      line-height: {{ block.settings.mobile_title_line_height }};
+      letter-spacing: {{ block.settings.mobile_title_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_title_bottom_gap }}px;
+      white-space: nowrap;
+    }
+
+    .ai-collection-editorial__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_description_size }}px;
+      line-height: 1.35;
+      max-width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .ai-collection-editorial__right-{{ ai_gen_id }} {
+      width: 100%;
+      min-width: 0;
+      padding-top: 10px;
+      border-top: 1px solid {{ block.settings.line_color }};
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ai-collection-editorial__note-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-collection-editorial__stat-number-{{ ai_gen_id }} {
+      display: inline;
+      margin: 0;
+      font-size: {{ block.settings.mobile_stat_size }}px;
+      line-height: 1;
+      letter-spacing: {{ block.settings.mobile_stat_spacing }}px;
+      color: {{ block.settings.stat_label_color }};
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .ai-collection-editorial__stat-number-{{ ai_gen_id }}::after {
+      content: "  {{ piece_word }} · in stock";
+    }
+
+    .ai-collection-editorial__stat-label-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-collection-editorial__updated-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-collection-editorial__updated-mobile-{{ ai_gen_id }} {
+      display: block;
+      margin: 0;
+      max-width: none;
+      font-family: {{ block.settings.stat_font.family }}, {{ block.settings.stat_font.fallback_families }};
+      font-style: {{ block.settings.stat_font.style }};
+      font-weight: 400;
+      font-size: {{ block.settings.mobile_updated_size }}px;
+      line-height: 1;
+      letter-spacing: {{ block.settings.mobile_updated_spacing }}px;
+      text-transform: uppercase;
+      color: {{ block.settings.stat_label_color }};
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  @media screen and (max-width: 380px) {
+    .ai-collection-editorial__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_title_size | minus: 6 }}px;
+    }
+
+    .ai-collection-editorial__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_description_size | minus: 1 }}px;
+    }
+
+    .ai-collection-editorial__stat-number-{{ ai_gen_id }},
+    .ai-collection-editorial__updated-mobile-{{ ai_gen_id }} {
+      font-size: 6px;
+      letter-spacing: 1.5px;
+    }
+  }
+{% endstyle %}
+
+<section
+  class="ai-collection-editorial-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-collection-editorial__inner-{{ ai_gen_id }}">
+    <div class="ai-collection-editorial__grid-{{ ai_gen_id }}">
+      <div class="ai-collection-editorial__left-{{ ai_gen_id }}">
+        {% if block.settings.kicker != blank %}
+          <p class="ai-collection-editorial__kicker-{{ ai_gen_id }}">
+            {{ block.settings.kicker }}
+          </p>
+        {% endif %}
+
+        {% if block.settings.title != blank %}
+          <h1 class="ai-collection-editorial__title-{{ ai_gen_id }}">
+            {{ block.settings.title }}
+          </h1>
+        {% endif %}
+
+        {% if dynamic_description != blank %}
+          <p class="ai-collection-editorial__description-{{ ai_gen_id }}">
+            {{ dynamic_description }}
+          </p>
+        {% endif %}
+      </div>
+
+      <aside class="ai-collection-editorial__right-{{ ai_gen_id }}">
+        {% if block.settings.note != blank %}
+          <p class="ai-collection-editorial__note-{{ ai_gen_id }}">
+            {{ block.settings.note | newline_to_br }}
+          </p>
+        {% endif %}
+
+        {% if block.settings.show_count %}
+          <p class="ai-collection-editorial__stat-number-{{ ai_gen_id }}">
+            {{ count_display }}
+          </p>
+
+          <p class="ai-collection-editorial__stat-label-{{ ai_gen_id }}">
+            {{ piece_word }} in stock
+          </p>
+        {% endif %}
+
+        {% if block.settings.show_updated %}
+          <p class="ai-collection-editorial__updated-{{ ai_gen_id }}">
+            {{ updated_desktop }}
+          </p>
+
+          <p class="ai-collection-editorial__updated-mobile-{{ ai_gen_id }}">
+            {{ updated_mobile }}
+          </p>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Dynamic collection hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Dynamic source"
+    },
+    {
+      "type": "collection",
+      "id": "manual_collection",
+      "label": "Collection for dynamic count"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_updated",
+      "label": "Show updated days ago",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Wrapper width"
+    },
+    {
+      "type": "range",
+      "id": "wrapper_max_width",
+      "label": "Desktop wrapper max width",
+      "min": 900,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Top small text",
+      "default": "00 / SHOP — SERIES 01 · 2026"
+    },
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "<p>The <em>Collection.</em></p>"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "[count] [pieces]. Every one of them built for the cars you've kept since you were nine.",
+      "info": "Use [count] for product count and [pieces] for piece/pieces."
+    },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Right note",
+      "default": "not a grid\n— a magazine"
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "left_right_space",
+      "label": "Space after left content",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_sides",
+      "label": "Desktop side padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "right_top_offset",
+      "label": "Right column top offset",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_sides",
+      "label": "Mobile side padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Grid background"
+    },
+    {
+      "type": "range",
+      "id": "grid_size",
+      "label": "Grid size",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "grid_opacity",
+      "label": "Grid opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "kicker_font",
+      "label": "Kicker font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "stat_font",
+      "label": "Stats font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "select",
+      "id": "kicker_weight",
+      "label": "Kicker weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Kicker size",
+      "min": 6,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "kicker_letter_spacing",
+      "label": "Kicker letter spacing",
+      "min": 0,
+      "max": 12,
+      "step": 0.5,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "kicker_bottom_gap",
+      "label": "Kicker bottom gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "title_italic_weight",
+      "label": "Italic title weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 40,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "title_line_height",
+      "label": "Title line height",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "title_letter_spacing",
+      "label": "Title letter spacing",
+      "min": -8,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "default": -4
+    },
+    {
+      "type": "range",
+      "id": "title_bottom_gap",
+      "label": "Title bottom gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "body_weight",
+      "label": "Description weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "description_width",
+      "label": "Description max width",
+      "min": 300,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 640
+    },
+    {
+      "type": "range",
+      "id": "note_size",
+      "label": "Right note size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "note_bottom_gap",
+      "label": "Right note bottom gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "stat_weight",
+      "label": "Stat number weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "stat_number_size",
+      "label": "Stat number size",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "stat_number_spacing",
+      "label": "Stat number letter spacing",
+      "min": -2,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "stat_label_size",
+      "label": "Stat label size",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "stat_label_spacing",
+      "label": "Stat label letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "updated_size",
+      "label": "Updated text size",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "updated_spacing",
+      "label": "Updated letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_size",
+      "label": "Mobile kicker size",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_letter_spacing",
+      "label": "Mobile kicker letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_bottom_gap",
+      "label": "Mobile kicker bottom gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Mobile title size",
+      "min": 34,
+      "max": 90,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_line_height",
+      "label": "Mobile title line height",
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 0.9
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_letter_spacing",
+      "label": "Mobile title letter spacing",
+      "min": -6,
+      "max": 2,
+      "step": 0.5,
+      "unit": "px",
+      "default": -2.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_bottom_gap",
+      "label": "Mobile title bottom gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile description size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "mobile_stat_size",
+      "label": "Mobile stat text size",
+      "min": 6,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "mobile_stat_spacing",
+      "label": "Mobile stat spacing",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "px",
+      "default": 2.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_updated_size",
+      "label": "Mobile updated size",
+      "min": 6,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "mobile_updated_spacing",
+      "label": "Mobile updated spacing",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "px",
+      "default": 2.5
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "color",
+      "id": "grid_color",
+      "label": "Grid lines",
+      "default": "#d9d2c6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Main text",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description text",
+      "default": "#24221d"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent red",
+      "default": "#df3a1d"
+    },
+    {
+      "type": "color",
+      "id": "stat_label_color",
+      "label": "Stat label text",
+      "default": "#6f675b"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Divider line",
+      "default": "#c8bdae"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dynamic collection hero"
+    }
+  ]
+}
+{% endschema %}

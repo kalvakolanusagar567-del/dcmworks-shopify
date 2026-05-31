@@ -1,0 +1,236 @@
+{% liquid
+  assign product = closest.product
+-%}
+
+{% capture children %}
+  {% content_for 'blocks', closest.product: product %}
+{% endcapture %}
+
+<style>
+  #shopify-block-{{ block.id }} [data-block-type="product-title"],
+  #shopify-block-{{ block.id }} product-title,
+  #shopify-block-{{ block.id }} .product-title,
+  #shopify-block-{{ block.id }} [class*="product-title"] {
+    margin: 0;
+  }
+
+  #shopify-block-{{ block.id }} [data-block-type="price"],
+  #shopify-block-{{ block.id }} price-list,
+  #shopify-block-{{ block.id }} .price,
+  #shopify-block-{{ block.id }} [class*="price"] {
+    margin: 0;
+  }
+
+  #shopify-block-{{ block.id }} .product-card {
+    position: relative;
+  }
+
+  #shopify-block-{{ block.id }} .product-card__content,
+  #shopify-block-{{ block.id }} .product-card__info,
+  #shopify-block-{{ block.id }} [class*="product-card__content"],
+  #shopify-block-{{ block.id }} [class*="product-card__info"] {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    column-gap: 12px;
+  }
+
+  #shopify-block-{{ block.id }} [data-block-type="product-title"],
+  #shopify-block-{{ block.id }} product-title,
+  #shopify-block-{{ block.id }} .product-title,
+  #shopify-block-{{ block.id }} [class*="product-title"] {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  #shopify-block-{{ block.id }} [data-block-type="price"],
+  #shopify-block-{{ block.id }} price-list,
+  #shopify-block-{{ block.id }} .price,
+  #shopify-block-{{ block.id }} [class*="price"] {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  #shopify-block-{{ block.id }} [data-block-type="text"],
+  #shopify-block-{{ block.id }} .product-card__subtitle,
+  #shopify-block-{{ block.id }} .product-card__description {
+    grid-column: 1 / -1;
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-block-{{ block.id }} .product-card__content,
+    #shopify-block-{{ block.id }} .product-card__info,
+    #shopify-block-{{ block.id }} [class*="product-card__content"],
+    #shopify-block-{{ block.id }} [class*="product-card__info"] {
+      grid-template-columns: 1fr auto;
+      column-gap: 10px;
+    }
+  }
+</style>
+
+{% render 'product-card', children: children, product: product %}
+
+{% schema %}
+{
+  "name": "t:names.product_card",
+  "blocks": [
+    {
+      "type": "_product-card-group"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "buy-buttons"
+    },
+    {
+      "type": "price"
+    },
+    {
+      "type": "review"
+    },
+    {
+      "type": "swatches"
+    },
+    {
+      "type": "_product-card-gallery"
+    },
+    {
+      "type": "product-title"
+    }
+  ],
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_card"
+    },
+    {
+      "type": "range",
+      "id": "product_card_gap",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

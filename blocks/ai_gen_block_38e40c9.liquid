@@ -1,0 +1,666 @@
+{% doc %}
+  @prompt
+    TOUGE EDITION DRIFTPAD NEWS 01·E04
+    Touge Edition DriftPad
+    $139.00
+    Guardrails · mountain pass · dusk lights
+
+    GARAGE KIT DIORAMA S02·E01
+    Garage Kit Diorama
+    $89.00
+    Two-bay shop · tools · oil drum
+
+    CF ADAPTER PLATE SALE ACC
+    CF Adapter Plate
+    $22.00
+    $32.00
+    Bolts onto any DriftPad
+
+    On mobile, this section should be horizontally scrollable.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-scroll-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+  }
+
+  .ai-product-scroll-container-{{ ai_gen_id }} {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .ai-product-scroll-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: {{ block.settings.gap }}px;
+    padding: 0 {{ block.settings.horizontal_padding }}px;
+    align-items: start;
+  }
+
+  .ai-product-card-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: {{ block.settings.text_color }};
+    background: transparent;
+    min-width: 0;
+  }
+
+  .ai-product-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ block.settings.image_aspect_ratio }};
+    overflow: hidden;
+    background-color: {{ block.settings.image_background }};
+    border: 1px solid {{ block.settings.text_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+  }
+
+  .ai-product-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-product-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        {{ block.settings.image_background }},
+        {{ block.settings.image_background }} 12px,
+        rgba(0, 0, 0, 0.03) 12px,
+        rgba(0, 0, 0, 0.03) 14px
+      );
+  }
+
+  .ai-product-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.18;
+  }
+
+  .ai-product-badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.badge_spacing }}px;
+    left: {{ block.settings.badge_spacing }}px;
+    background-color: {{ block.settings.badge_background }};
+    color: {{ block.settings.badge_text_color }};
+    padding: 4px 10px;
+    font-size: {{ block.settings.badge_font_size }}px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    border-radius: {{ block.settings.badge_border_radius }}px;
+    z-index: 2;
+    letter-spacing: 0.08em;
+  }
+
+  .ai-product-info-{{ ai_gen_id }} {
+    padding: {{ block.settings.card_padding }}px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ai-product-category-{{ ai_gen_id }} {
+    font-size: {{ block.settings.category_font_size }}px;
+    color: {{ block.settings.category_color }};
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .ai-product-title-price-row-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ai-product-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_font_size }}px;
+    font-weight: 500;
+    color: {{ block.settings.text_color }};
+    line-height: 1.2;
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ai-product-price-wrap-{{ ai_gen_id }} {
+    flex: 0 0 auto;
+    text-align: right;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .ai-product-price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.price_font_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-product-compare-price-{{ ai_gen_id }} {
+    font-size: calc({{ block.settings.price_font_size }}px - 3px);
+    color: {{ block.settings.compare_price_color }};
+    text-decoration: line-through;
+    margin-left: 6px;
+    font-weight: 400;
+  }
+
+  .ai-product-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_font_size }}px;
+    color: {{ block.settings.description_color }};
+    line-height: 1.35;
+  }
+
+  .ai-product-card-{{ ai_gen_id }}:hover .ai-product-title-{{ ai_gen_id }} {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-product-scroll-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.section_padding }}px 0;
+    }
+
+    .ai-product-scroll-container-{{ ai_gen_id }} {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x proximity;
+    }
+
+    .ai-product-scroll-container-{{ ai_gen_id }}::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ai-product-scroll-grid-{{ ai_gen_id }} {
+      display: flex;
+      gap: {{ block.settings.gap }}px;
+      padding: 0 {{ block.settings.horizontal_padding }}px;
+      width: max-content;
+    }
+
+    .ai-product-card-{{ ai_gen_id }} {
+      flex: 0 0 clamp(145px, 46vw, 180px);
+      scroll-snap-align: start;
+    }
+
+    .ai-product-title-price-row-{{ ai_gen_id }} {
+      gap: 8px;
+    }
+
+    .ai-product-title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.title_font_size }}px + 1px);
+      line-height: 1.15;
+    }
+
+    .ai-product-price-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.price_font_size }}px - 1px);
+    }
+
+    .ai-product-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_font_size }}px;
+      line-height: 1.3;
+    }
+  }
+{% endstyle %}
+
+<product-scroll-{{ ai_gen_id }} class="ai-product-scroll-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-product-scroll-container-{{ ai_gen_id }}">
+    <div class="ai-product-scroll-grid-{{ ai_gen_id }}">
+      {% for i in (1..3) %}
+        {% liquid
+          assign product_key = 'product_' | append: i
+          assign category_key = 'category_' | append: i
+          assign description_key = 'description_' | append: i
+          assign badge_key = 'badge_' | append: i
+
+          assign product = block.settings[product_key]
+          assign category = block.settings[category_key]
+          assign description = block.settings[description_key]
+          assign badge = block.settings[badge_key]
+        %}
+
+        {% if product != blank %}
+          <a href="{{ product.url }}" class="ai-product-card-{{ ai_gen_id }}">
+            <div class="ai-product-image-wrapper-{{ ai_gen_id }}">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 900 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  class="ai-product-image-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="900"
+                  height="900"
+                >
+              {% else %}
+                <div class="ai-product-image-placeholder-{{ ai_gen_id }}">
+                  {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+
+              {% if badge != blank %}
+                <div class="ai-product-badge-{{ ai_gen_id }}">{{ badge }}</div>
+              {% endif %}
+            </div>
+
+            <div class="ai-product-info-{{ ai_gen_id }}">
+              {% if category != blank %}
+                <div class="ai-product-category-{{ ai_gen_id }}">{{ category }}</div>
+              {% endif %}
+
+              <div class="ai-product-title-price-row-{{ ai_gen_id }}">
+                <h3 class="ai-product-title-{{ ai_gen_id }}">{{ product.title }}</h3>
+
+                <div class="ai-product-price-wrap-{{ ai_gen_id }}">
+                  <span class="ai-product-price-{{ ai_gen_id }}">{{ product.price | money }}</span>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="ai-product-compare-price-{{ ai_gen_id }}">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% if description != blank %}
+                <div class="ai-product-description-{{ ai_gen_id }}">{{ description }}</div>
+              {% endif %}
+            </div>
+          </a>
+        {% else %}
+          <div class="ai-product-card-{{ ai_gen_id }}">
+            <div class="ai-product-image-wrapper-{{ ai_gen_id }}">
+              <div class="ai-product-image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            </div>
+
+            <div class="ai-product-info-{{ ai_gen_id }}">
+              <div class="ai-product-category-{{ ai_gen_id }}">Category</div>
+
+              <div class="ai-product-title-price-row-{{ ai_gen_id }}">
+                <h3 class="ai-product-title-{{ ai_gen_id }}">Product {{ i }}</h3>
+                <div class="ai-product-price-wrap-{{ ai_gen_id }}">
+                  <span class="ai-product-price-{{ ai_gen_id }}">$0.00</span>
+                </div>
+              </div>
+
+              <div class="ai-product-description-{{ ai_gen_id }}">Add a product to display</div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</product-scroll-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductScroll{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.container = this.querySelector('.ai-product-scroll-container-{{ ai_gen_id }}');
+        if (window.innerWidth <= 749) {
+          this.setupScrollBehavior();
+        }
+      }
+
+      setupScrollBehavior() {
+        if (!this.container) return;
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        this.container.addEventListener('mousedown', (e) => {
+          isDown = true;
+          this.container.style.cursor = 'grabbing';
+          startX = e.pageX - this.container.offsetLeft;
+          scrollLeft = this.container.scrollLeft;
+        });
+
+        this.container.addEventListener('mouseleave', () => {
+          isDown = false;
+          this.container.style.cursor = '';
+        });
+
+        this.container.addEventListener('mouseup', () => {
+          isDown = false;
+          this.container.style.cursor = '';
+        });
+
+        this.container.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - this.container.offsetLeft;
+          const walk = (x - startX) * 1.5;
+          this.container.scrollLeft = scrollLeft - walk;
+        });
+      }
+    }
+
+    customElements.define('product-scroll-{{ ai_gen_id }}', ProductScroll{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product scroll",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Product 1"
+    },
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "Product"
+    },
+    {
+      "type": "text",
+      "id": "category_1",
+      "label": "Category"
+    },
+    {
+      "type": "text",
+      "id": "badge_1",
+      "label": "Badge text"
+    },
+    {
+      "type": "text",
+      "id": "description_1",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Product 2"
+    },
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "Product"
+    },
+    {
+      "type": "text",
+      "id": "category_2",
+      "label": "Category"
+    },
+    {
+      "type": "text",
+      "id": "badge_2",
+      "label": "Badge text"
+    },
+    {
+      "type": "text",
+      "id": "description_2",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Product 3"
+    },
+    {
+      "type": "product",
+      "id": "product_3",
+      "label": "Product"
+    },
+    {
+      "type": "text",
+      "id": "category_3",
+      "label": "Category"
+    },
+    {
+      "type": "text",
+      "id": "badge_3",
+      "label": "Badge text"
+    },
+    {
+      "type": "text",
+      "id": "description_3",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Info top padding",
+      "min": 0,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        {
+          "value": "1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "1.33",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "0.75",
+          "label": "Portrait (3:4)"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "color",
+      "id": "image_background",
+      "label": "Background",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Background",
+      "default": "#d63f1c"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Font size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "badge_spacing",
+      "label": "Spacing from edge",
+      "min": 5,
+      "max": 20,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#030302"
+    },
+    {
+      "type": "range",
+      "id": "category_font_size",
+      "label": "Category font size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "category_color",
+      "label": "Category color",
+      "default": "#8f8678"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "price_font_size",
+      "label": "Price font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "compare_price_color",
+      "label": "Compare price color",
+      "default": "#999999"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Description font size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#666666"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product scroll"
+    }
+  ]
+}
+{% endschema %}

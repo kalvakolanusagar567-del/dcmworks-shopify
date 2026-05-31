@@ -1,0 +1,783 @@
+{% doc %}
+  @prompt
+    FEATURES
+    A Continuous, silent motor
+    B Built-in lighting
+    C Fits 1:64 — every brand
+    D Set-and-forget
+    4 columns desktop, bordered stacked rows on mobile.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-features-grid-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding_top }}px {{ block.settings.section_padding_x }}px {{ block.settings.section_padding_bottom }}px;
+    box-sizing: border-box;
+  }
+
+  .ai-features-grid__section-label-{{ ai_gen_id }} {
+    font-family: {{ block.settings.section_label_font_family }};
+    font-size: {{ block.settings.section_label_size }}px;
+    font-weight: {{ block.settings.section_label_weight }};
+    color: {{ block.settings.section_label_color }};
+    letter-spacing: {{ block.settings.section_label_letter_spacing }};
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0 0 {{ block.settings.section_label_bottom_spacing }}px;
+  }
+
+  .ai-features-grid__container-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: {{ block.settings.column_gap }}px;
+    width: 100%;
+  }
+
+  .ai-features-grid__item-{{ ai_gen_id }} {
+    min-width: 0;
+  }
+
+  .ai-features-grid__label-{{ ai_gen_id }} {
+    width: {{ block.settings.circle_size }}px;
+    height: {{ block.settings.circle_size }}px;
+    border-radius: 999px;
+    border: {{ block.settings.circle_border_width }} solid {{ block.settings.circle_border_color }};
+    background: {{ block.settings.circle_background }};
+    color: {{ block.settings.label_color }};
+    font-family: {{ block.settings.label_font_family }};
+    font-size: {{ block.settings.label_size }}px;
+    font-weight: {{ block.settings.label_weight }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0 0 {{ block.settings.circle_bottom_spacing }}px;
+    text-transform: uppercase;
+  }
+
+  .ai-features-grid__heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font_family }};
+    font-size: {{ block.settings.heading_size }}px;
+    font-weight: {{ block.settings.heading_weight }};
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.heading_bottom_spacing }}px;
+    line-height: {{ block.settings.heading_line_height }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }};
+  }
+
+  .ai-features-grid__description-{{ ai_gen_id }} {
+    font-family: {{ block.settings.description_font_family }};
+    font-size: {{ block.settings.description_size }}px;
+    font-weight: {{ block.settings.description_weight }};
+    color: {{ block.settings.description_color }};
+    margin: 0;
+    line-height: {{ block.settings.description_line_height }};
+    letter-spacing: {{ block.settings.description_letter_spacing }};
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-features-grid__container-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: {{ block.settings.tablet_row_gap }}px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-features-grid-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.mobile_section_padding_top }}px {{ block.settings.mobile_section_padding_x }}px {{ block.settings.mobile_section_padding_bottom }}px;
+      border-top: {{ block.settings.mobile_section_border_width }} solid {{ block.settings.mobile_section_border_color }};
+      border-bottom: {{ block.settings.mobile_section_border_width }} solid {{ block.settings.mobile_section_border_color }};
+    }
+
+    .ai-features-grid__section-label-{{ ai_gen_id }} {
+      margin-bottom: {{ block.settings.mobile_section_label_bottom_spacing }}px;
+      font-size: {{ block.settings.mobile_section_label_size }}px;
+    }
+
+    .ai-features-grid__container-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 0;
+      border-top: {{ block.settings.mobile_item_border_width }} solid {{ block.settings.mobile_item_border_color }};
+    }
+
+    .ai-features-grid__item-{{ ai_gen_id }} {
+      display: grid;
+      grid-template-columns: {{ block.settings.mobile_circle_column_width }}px 1fr;
+      column-gap: {{ block.settings.mobile_text_gap }}px;
+      align-items: start;
+      padding: {{ block.settings.mobile_item_padding_y }}px 0;
+      border-bottom: {{ block.settings.mobile_item_border_width }} solid {{ block.settings.mobile_item_border_color }};
+    }
+
+    .ai-features-grid__label-{{ ai_gen_id }} {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      margin: 0;
+      width: {{ block.settings.mobile_circle_size }}px;
+      height: {{ block.settings.mobile_circle_size }}px;
+      font-size: {{ block.settings.mobile_label_size }}px;
+    }
+
+    .ai-features-grid__heading-{{ ai_gen_id }} {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: {{ block.settings.mobile_heading_size }}px;
+      margin: 0 0 {{ block.settings.mobile_heading_bottom_spacing }}px;
+    }
+
+    .ai-features-grid__description-{{ ai_gen_id }} {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: {{ block.settings.mobile_description_size }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-features-grid-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.section_label != blank %}
+    <div class="ai-features-grid__section-label-{{ ai_gen_id }}">
+      {{ block.settings.section_label }}
+    </div>
+  {% endif %}
+
+  <div class="ai-features-grid__container-{{ ai_gen_id }}">
+    {% if block.settings.feature_a_enabled %}
+      <div class="ai-features-grid__item-{{ ai_gen_id }}">
+        <div class="ai-features-grid__label-{{ ai_gen_id }}">{{ block.settings.feature_a_label }}</div>
+        <h3 class="ai-features-grid__heading-{{ ai_gen_id }}">{{ block.settings.feature_a_heading }}</h3>
+        <p class="ai-features-grid__description-{{ ai_gen_id }}">{{ block.settings.feature_a_description }}</p>
+      </div>
+    {% endif %}
+
+    {% if block.settings.feature_b_enabled %}
+      <div class="ai-features-grid__item-{{ ai_gen_id }}">
+        <div class="ai-features-grid__label-{{ ai_gen_id }}">{{ block.settings.feature_b_label }}</div>
+        <h3 class="ai-features-grid__heading-{{ ai_gen_id }}">{{ block.settings.feature_b_heading }}</h3>
+        <p class="ai-features-grid__description-{{ ai_gen_id }}">{{ block.settings.feature_b_description }}</p>
+      </div>
+    {% endif %}
+
+    {% if block.settings.feature_c_enabled %}
+      <div class="ai-features-grid__item-{{ ai_gen_id }}">
+        <div class="ai-features-grid__label-{{ ai_gen_id }}">{{ block.settings.feature_c_label }}</div>
+        <h3 class="ai-features-grid__heading-{{ ai_gen_id }}">{{ block.settings.feature_c_heading }}</h3>
+        <p class="ai-features-grid__description-{{ ai_gen_id }}">{{ block.settings.feature_c_description }}</p>
+      </div>
+    {% endif %}
+
+    {% if block.settings.feature_d_enabled %}
+      <div class="ai-features-grid__item-{{ ai_gen_id }}">
+        <div class="ai-features-grid__label-{{ ai_gen_id }}">{{ block.settings.feature_d_label }}</div>
+        <h3 class="ai-features-grid__heading-{{ ai_gen_id }}">{{ block.settings.feature_d_heading }}</h3>
+        <p class="ai-features-grid__description-{{ ai_gen_id }}">{{ block.settings.feature_d_description }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product features grid",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section label"
+    },
+    {
+      "type": "text",
+      "id": "section_label",
+      "label": "Section label",
+      "default": "FEATURES"
+    },
+    {
+      "type": "header",
+      "content": "Feature A"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_a_enabled",
+      "label": "Enable feature A",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "feature_a_label",
+      "label": "Circle label",
+      "default": "A"
+    },
+    {
+      "type": "text",
+      "id": "feature_a_heading",
+      "label": "Heading",
+      "default": "Continuous, silent motor"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_a_description",
+      "label": "Description",
+      "default": "Run it on a Zoom call."
+    },
+    {
+      "type": "header",
+      "content": "Feature B"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_b_enabled",
+      "label": "Enable feature B",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "feature_b_label",
+      "label": "Circle label",
+      "default": "B"
+    },
+    {
+      "type": "text",
+      "id": "feature_b_heading",
+      "label": "Heading",
+      "default": "Built-in lighting"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_b_description",
+      "label": "Description",
+      "default": "Always-on. Plays nice with RGB."
+    },
+    {
+      "type": "header",
+      "content": "Feature C"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_c_enabled",
+      "label": "Enable feature C",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "feature_c_label",
+      "label": "Circle label",
+      "default": "C"
+    },
+    {
+      "type": "text",
+      "id": "feature_c_heading",
+      "label": "Heading",
+      "default": "Fits 1:64 — every brand"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_c_description",
+      "label": "Description",
+      "default": "Hot Wheels · Mini GT · Kaido · Inno64."
+    },
+    {
+      "type": "header",
+      "content": "Feature D"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_d_enabled",
+      "label": "Enable feature D",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "feature_d_label",
+      "label": "Circle label",
+      "default": "D"
+    },
+    {
+      "type": "text",
+      "id": "feature_d_heading",
+      "label": "Heading",
+      "default": "Set-and-forget"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_d_description",
+      "label": "Description",
+      "default": "12V · 2A. Same as a router."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Padding left/right",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "tablet_row_gap",
+      "label": "Tablet row gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_top",
+      "label": "Mobile padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_bottom",
+      "label": "Mobile padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_x",
+      "label": "Mobile padding left/right",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Mobile borders"
+    },
+    {
+      "type": "text",
+      "id": "mobile_section_border_width",
+      "label": "Mobile section top/bottom border width",
+      "default": "1.5px"
+    },
+    {
+      "type": "color",
+      "id": "mobile_section_border_color",
+      "label": "Mobile section border color",
+      "default": "#111111"
+    },
+    {
+      "type": "text",
+      "id": "mobile_item_border_width",
+      "label": "Mobile item divider width",
+      "default": "1px"
+    },
+    {
+      "type": "color",
+      "id": "mobile_item_border_color",
+      "label": "Mobile item divider color",
+      "default": "#d8d0c3"
+    },
+    {
+      "type": "range",
+      "id": "mobile_item_padding_y",
+      "label": "Mobile item top/bottom padding",
+      "min": 8,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_circle_column_width",
+      "label": "Mobile circle column width",
+      "min": 30,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "mobile_circle_size",
+      "label": "Mobile circle size",
+      "min": 20,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mobile_label_size",
+      "label": "Mobile circle letter size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_gap",
+      "label": "Mobile gap between circle and text",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_bottom_spacing",
+      "label": "Mobile heading bottom spacing",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_label_bottom_spacing",
+      "label": "Mobile FEATURES label bottom spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Circle label"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "Circle size",
+      "min": 18,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "circle_border_width",
+      "label": "Circle border width",
+      "default": "1.5px"
+    },
+    {
+      "type": "color",
+      "id": "circle_border_color",
+      "label": "Circle border color",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "circle_background",
+      "label": "Circle background",
+      "default": "#f7f3ea"
+    },
+    {
+      "type": "range",
+      "id": "circle_bottom_spacing",
+      "label": "Circle bottom spacing",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "text",
+      "id": "section_label_font_family",
+      "label": "Section label font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "section_label_size",
+      "label": "Section label size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_label_size",
+      "label": "Mobile section label size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "section_label_weight",
+      "label": "Section label weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "section_label_color",
+      "label": "Section label color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "section_label_letter_spacing",
+      "label": "Section label letter spacing",
+      "default": "0.45em"
+    },
+    {
+      "type": "range",
+      "id": "section_label_bottom_spacing",
+      "label": "Section label bottom spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "label_font_family",
+      "label": "Circle letter font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Circle letter size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Circle letter weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Circle letter color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "heading_font_family",
+      "label": "Heading font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 10,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_height",
+      "label": "Heading line height",
+      "default": "1.15"
+    },
+    {
+      "type": "text",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "default": "-0.02em"
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_spacing",
+      "label": "Heading bottom spacing",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "description_font_family",
+      "label": "Description font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile description size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "description_weight",
+      "label": "Description weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "description_line_height",
+      "label": "Description line height",
+      "default": "1.35"
+    },
+    {
+      "type": "text",
+      "id": "description_letter_spacing",
+      "label": "Description letter spacing",
+      "default": "0"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product features grid"
+    }
+  ]
+}
+{% endschema %}

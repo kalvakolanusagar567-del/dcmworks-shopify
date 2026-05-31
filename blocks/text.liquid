@@ -1,0 +1,304 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  .custom-text-block-{{ block.id }} {
+    color: {{ block.settings.custom_text_color }};
+    font-family: {{ block.settings.custom_font_family }};
+    font-size: {{ block.settings.custom_font_size_desktop }}px;
+    font-weight: {{ block.settings.custom_font_weight }};
+    line-height: {{ block.settings.custom_line_height_value }};
+    letter-spacing: {{ block.settings.custom_letter_spacing_value }};
+    background-color: {% if block.settings.enable_custom_background %}{{ block.settings.custom_background_color }}{% else %}transparent{% endif %};
+    border-radius: {{ block.settings.custom_corner_radius }}px;
+    padding-top: {{ block.settings.custom_padding_top }}px;
+    padding-bottom: {{ block.settings.custom_padding_bottom }}px;
+    padding-left: {{ block.settings.custom_padding_left }}px;
+    padding-right: {{ block.settings.custom_padding_right }}px;
+    text-align: {{ block.settings.custom_text_alignment }};
+  }
+
+  {% unless block.settings.show_on_desktop %}
+    @media screen and (min-width: 750px) {
+      .custom-text-block-{{ block.id }} {
+        display: none !important;
+      }
+    }
+  {% endunless %}
+
+  @media screen and (max-width: 749px) {
+    .custom-text-block-{{ block.id }} {
+      font-size: {{ block.settings.custom_font_size_mobile }}px;
+      line-height: {{ block.settings.custom_mobile_line_height_value }};
+      letter-spacing: {{ block.settings.custom_mobile_letter_spacing_value }};
+      padding-top: {{ block.settings.custom_mobile_padding_top }}px;
+      padding-bottom: {{ block.settings.custom_mobile_padding_bottom }}px;
+      padding-left: {{ block.settings.custom_mobile_padding_left }}px;
+      padding-right: {{ block.settings.custom_mobile_padding_right }}px;
+    }
+
+    {% unless block.settings.show_on_mobile %}
+      .custom-text-block-{{ block.id }} {
+        display: none !important;
+      }
+    {% endunless %}
+  }
+</style>
+
+<div
+  class="custom-text-block-{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  {% render 'text', block: block %}
+</div>
+
+{% schema %}
+{
+  "name": "t:names.text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "t:html_defaults.share_information_about_your"
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "Show on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on mobile",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Custom Text Style"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "custom_font_family",
+      "label": "Font family",
+      "default": "Inter, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "custom_font_size_desktop",
+      "label": "Desktop font size",
+      "min": 8,
+      "max": 300,
+      "step": 4,
+      "unit": "px",
+      "default": 104
+    },
+    {
+      "type": "range",
+      "id": "custom_font_size_mobile",
+      "label": "Mobile font size",
+      "min": 8,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "select",
+      "id": "custom_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "200"
+    },
+    {
+      "type": "text",
+      "id": "custom_line_height_value",
+      "label": "Desktop line height",
+      "default": "0.92"
+    },
+    {
+      "type": "text",
+      "id": "custom_mobile_line_height_value",
+      "label": "Mobile line height",
+      "default": "0.95"
+    },
+    {
+      "type": "text",
+      "id": "custom_letter_spacing_value",
+      "label": "Desktop letter spacing",
+      "default": "-0.04em"
+    },
+    {
+      "type": "text",
+      "id": "custom_mobile_letter_spacing_value",
+      "label": "Mobile letter spacing",
+      "default": "-0.03em"
+    },
+    {
+      "type": "select",
+      "id": "custom_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "justify", "label": "Justify" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Custom Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_background",
+      "label": "Enable background color",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_background_color",
+      "label": "Background color",
+      "default": "#f4f0e8"
+    },
+    {
+      "type": "range",
+      "id": "custom_corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Desktop Padding"
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_top",
+      "label": "Desktop padding top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_bottom",
+      "label": "Desktop padding bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_left",
+      "label": "Desktop padding left",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_right",
+      "label": "Desktop padding right",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile Padding"
+    },
+    {
+      "type": "range",
+      "id": "custom_mobile_padding_top",
+      "label": "Mobile padding top",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_mobile_padding_bottom",
+      "label": "Mobile padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_mobile_padding_left",
+      "label": "Mobile padding left",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "custom_mobile_padding_right",
+      "label": "Mobile padding right",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.text",
+      "category": "t:categories.basic",
+      "settings": {
+        "text": "<p>We make things that work better and last longer. Our products solve real problems with clean design and honest materials.</p>"
+      }
+    },
+    {
+      "name": "t:names.heading",
+      "category": "t:categories.basic",
+      "settings": {
+        "text": "<h2>New arrivals</h2>"
+      }
+    }
+  ]
+}
+{% endschema %}

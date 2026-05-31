@@ -1,0 +1,693 @@
+{% doc %}
+  @prompt
+    END · SERIES 01
+    Series 02 drops · Q3 · 2026
+    Notify me →
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  {{ block.settings.kicker_font | font_face }}
+  {{ block.settings.heading_font | font_face }}
+  {{ block.settings.button_font | font_face }}
+
+  .ai-series-end-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_sides }}px {{ block.settings.padding_bottom }}px;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    margin-top: 0;
+  }
+
+  .ai-series-end-{{ ai_gen_id }} *,
+  .ai-series-end-{{ ai_gen_id }} *::before,
+  .ai-series-end-{{ ai_gen_id }} *::after {
+    box-sizing: border-box;
+  }
+
+  .ai-series-end__inner-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .ai-series-end__kicker-{{ ai_gen_id }},
+  .ai-series-end__heading-{{ ai_gen_id }},
+  .ai-series-end__button-{{ ai_gen_id }} {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ai-series-end__kicker-{{ ai_gen_id }} {
+    margin-top: 0;
+    margin-bottom: {{ block.settings.kicker_bottom_gap }}px;
+    font-family: {{ block.settings.kicker_font.family }}, {{ block.settings.kicker_font.fallback_families }};
+    font-style: {{ block.settings.kicker_font.style }};
+    font-weight: {{ block.settings.kicker_weight }};
+    font-size: {{ block.settings.kicker_size }}px;
+    line-height: 1.2;
+    letter-spacing: {{ block.settings.kicker_letter_spacing }}px;
+    color: {{ block.settings.kicker_color }};
+    text-transform: uppercase;
+  }
+
+  .ai-series-end__heading-{{ ai_gen_id }} {
+    margin-top: 0;
+    margin-bottom: {{ block.settings.heading_bottom_gap }}px;
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-style: {{ block.settings.heading_font.style }};
+    font-weight: {{ block.settings.heading_weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: {{ block.settings.heading_line_height }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }}px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-series-end__accent-{{ ai_gen_id }} {
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-series-end__button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: {{ block.settings.button_min_width }}px;
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    border: {{ block.settings.button_border_width }}px solid {{ block.settings.button_border_color }};
+    background: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    font-family: {{ block.settings.button_font.family }}, {{ block.settings.button_font.fallback_families }};
+    font-style: {{ block.settings.button_font.style }};
+    font-weight: {{ block.settings.button_weight }};
+    font-size: {{ block.settings.button_size }}px;
+    line-height: 1;
+    letter-spacing: {{ block.settings.button_letter_spacing }}px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .ai-series-end__button-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.button_hover_background }};
+    color: {{ block.settings.button_hover_text_color }};
+    border-color: {{ block.settings.button_hover_border_color }};
+  }
+
+  .ai-series-end__arrow-{{ ai_gen_id }} {
+    display: inline-block;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .ai-series-end__button-{{ ai_gen_id }}:hover .ai-series-end__arrow-{{ ai_gen_id }} {
+    transform: translateX(3px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-series-end-{{ ai_gen_id }} {
+      padding: {{ block.settings.mobile_padding_top }}px {{ block.settings.mobile_padding_sides }}px {{ block.settings.mobile_padding_bottom }}px;
+    }
+
+    .ai-series-end__inner-{{ ai_gen_id }} {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .ai-series-end__kicker-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_kicker_size }}px;
+      letter-spacing: {{ block.settings.mobile_kicker_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_kicker_bottom_gap }}px;
+    }
+
+    .ai-series-end__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_heading_size }}px;
+      line-height: {{ block.settings.mobile_heading_line_height }};
+      letter-spacing: {{ block.settings.mobile_heading_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_heading_bottom_gap }}px;
+    }
+
+    .ai-series-end__button-{{ ai_gen_id }} {
+      min-width: {{ block.settings.mobile_button_min_width }}px;
+      padding: {{ block.settings.mobile_button_padding_vertical }}px {{ block.settings.mobile_button_padding_horizontal }}px;
+      font-size: {{ block.settings.mobile_button_size }}px;
+      letter-spacing: {{ block.settings.mobile_button_letter_spacing }}px;
+    }
+  }
+{% endstyle %}
+
+<section class="ai-series-end-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-series-end__inner-{{ ai_gen_id }}">
+    {% if block.settings.kicker != blank %}
+      <p class="ai-series-end__kicker-{{ ai_gen_id }}">
+        {{ block.settings.kicker }}
+      </p>
+    {% endif %}
+
+    {% if block.settings.heading_before != blank or block.settings.heading_accent != blank %}
+      <h2 class="ai-series-end__heading-{{ ai_gen_id }}">
+        {{ block.settings.heading_before }}
+        {% if block.settings.heading_accent != blank %}
+          <span class="ai-series-end__accent-{{ ai_gen_id }}">
+            {{ block.settings.heading_accent }}
+          </span>
+        {% endif %}
+      </h2>
+    {% endif %}
+
+    {% if block.settings.button_text != blank %}
+      <a
+        href="{% if block.settings.button_link != blank %}{{ block.settings.button_link }}{% else %}#{% endif %}"
+        class="ai-series-end__button-{{ ai_gen_id }}"
+      >
+        {{ block.settings.button_text }}
+        <span class="ai-series-end__arrow-{{ ai_gen_id }}">→</span>
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Series end",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Small top text",
+      "default": "END · SERIES 01"
+    },
+    {
+      "type": "text",
+      "id": "heading_before",
+      "label": "Heading text",
+      "default": "Series 02 drops ·"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Red heading text",
+      "default": "Q3 · 2026"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Notify me"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Desktop side padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_sides",
+      "label": "Mobile side padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "top_border_width",
+      "label": "Top border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "kicker_font",
+      "label": "Kicker font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "button_font",
+      "label": "Button font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "header",
+      "content": "Kicker typography"
+    },
+    {
+      "type": "select",
+      "id": "kicker_weight",
+      "label": "Kicker weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Kicker size",
+      "min": 6,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_size",
+      "label": "Mobile kicker size",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "kicker_letter_spacing",
+      "label": "Kicker letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_letter_spacing",
+      "label": "Mobile kicker letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.5,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "kicker_bottom_gap",
+      "label": "Kicker bottom gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_bottom_gap",
+      "label": "Mobile kicker bottom gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Heading typography"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop heading size",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading line height",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_line_height",
+      "label": "Mobile heading line height",
+      "min": 0.8,
+      "max": 1.8,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": -2,
+      "max": 4,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.4
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Mobile heading letter spacing",
+      "min": -2,
+      "max": 4,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.2
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_gap",
+      "label": "Heading bottom gap",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_bottom_gap",
+      "label": "Mobile heading bottom gap",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Button typography"
+    },
+    {
+      "type": "select",
+      "id": "button_weight",
+      "label": "Button weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_size",
+      "label": "Mobile button size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "button_letter_spacing",
+      "label": "Button letter spacing",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_letter_spacing",
+      "label": "Mobile button letter spacing",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "button_min_width",
+      "label": "Button min width",
+      "min": 80,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 128
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_min_width",
+      "label": "Mobile button min width",
+      "min": 80,
+      "max": 220,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "label": "Button vertical padding",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_vertical",
+      "label": "Mobile button vertical padding",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "label": "Button horizontal padding",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding_horizontal",
+      "label": "Mobile button horizontal padding",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "Button border width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Main text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "kicker_color",
+      "label": "Kicker",
+      "default": "#8f8678"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent red",
+      "default": "#df3a1d"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Top border",
+      "default": "#cfc6b8"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Button hover background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button hover text",
+      "default": "#f5f1ea"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Button hover border",
+      "default": "#111111"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Series end"
+    }
+  ]
+}
+{% endschema %}

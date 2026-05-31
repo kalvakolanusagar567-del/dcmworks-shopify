@@ -1,0 +1,118 @@
+{%- doc -%}
+  Custom contact form
+{%- enddoc -%}
+
+<div
+  class="
+    contact-form
+    spacing-style size-style
+    {% if settings.inherit_color_scheme == false %}color-{{ settings.color_scheme }}{% endif %}
+  "
+  style="
+    {% render 'spacing-style', settings: settings %}
+    {% render 'size-style', settings: settings %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {% assign form_id = block.id | default: section.id | prepend: 'ContactForm-' %}
+
+  {%- form 'contact', id: form_id, class: 'contact-form__form' -%}
+
+    {%- if form.posted_successfully? -%}
+      <div class="contact-form__success" tabindex="-1" autofocus>
+        {{ 'icon-checkmark.svg' | inline_asset_content }}
+        Thanks for contacting us. We'll get back to you as soon as possible.
+      </div>
+    {%- endif -%}
+
+    {%- if form.errors -%}
+      <div class="contact-form__error" tabindex="-1" autofocus>
+        {{ 'icon-error.svg' | inline_asset_content }}
+        Please check the form and try again.
+      </div>
+    {%- endif -%}
+
+    <div class="contact-form__form-row">
+      <input
+        type="text"
+        id="ContactForm-name"
+        class="contact-form__input"
+        name="contact[name]"
+        autocomplete="name"
+        placeholder="Name"
+        required
+      >
+
+      <input
+        type="email"
+        id="ContactForm-email"
+        class="contact-form__input"
+        name="contact[email]"
+        autocomplete="email"
+        placeholder="Email"
+        required
+      >
+    </div>
+
+    <input
+      type="text"
+      id="ContactForm-order-number"
+      class="contact-form__input"
+      name="contact[Order Number]"
+      placeholder="Order Number (Optional)"
+    >
+
+    <textarea
+      rows="8"
+      id="ContactForm-body"
+      class="contact-form__input contact-form__input--textarea"
+      name="contact[Issue / Message]"
+      placeholder="Issue / Message"
+      required
+    ></textarea>
+
+    {{ submit_button }}
+
+  {%- endform -%}
+</div>
+
+{% stylesheet %}
+.contact-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+.contact-form__form-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+@media screen and (min-width: 750px) {
+  .contact-form__form-row {
+    flex-direction: row;
+  }
+}
+
+.contact-form__input {
+  width: 100%;
+  padding: var(--padding-lg) var(--padding-xl);
+  border-radius: var(--style-border-radius-inputs);
+  border: var(--style-border-width-inputs) solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-foreground);
+}
+
+.contact-form__input--textarea {
+  resize: vertical;
+  min-height: 180px;
+}
+
+.contact-form__success,
+.contact-form__error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+{% endstylesheet %}

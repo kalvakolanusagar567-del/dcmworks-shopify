@@ -1,0 +1,1271 @@
+{% doc %}
+  @prompt
+    Reviews / testimonials block.
+    Desktop: 3 column testimonial cards.
+    Mobile: compact reviews list with header, dividers, and show more reviews button.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-testimonials-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0px;
+    background-color: {{ block.settings.background_color }};
+    font-family: {{ block.settings.body_font_family }};
+    box-sizing: border-box;
+  }
+
+  .ai-testimonials-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 {{ block.settings.desktop_side_padding }}px;
+  }
+
+  .ai-testimonials-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.heading_alignment }};
+    margin-bottom: {{ block.settings.heading_bottom_spacing }}px;
+  }
+
+  .ai-testimonials-heading-box-{{ ai_gen_id }} {
+    display: inline-block;
+    border: {{ block.settings.heading_border_width }}px solid {{ block.settings.heading_border_color }};
+    border-radius: {{ block.settings.heading_border_radius }}px;
+    padding: {{ block.settings.heading_padding_y }}px {{ block.settings.heading_padding_x }}px;
+    background-color: {{ block.settings.heading_background }};
+  }
+
+  .ai-testimonials-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font_family }};
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+    font-weight: {{ block.settings.heading_font_weight }};
+    line-height: {{ block.settings.heading_line_height }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }};
+    text-transform: {{ block.settings.heading_text_transform }};
+  }
+
+  .ai-testimonials-mobile-top-{{ ai_gen_id }},
+  .ai-testimonials-mobile-footer-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .ai-testimonials-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-testimonial-card-{{ ai_gen_id }} {
+    background-color: {{ block.settings.card_background }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: {{ block.settings.card_padding }}px;
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.card_content_gap }}px;
+    min-height: {{ block.settings.card_min_height }}px;
+  }
+
+  .ai-testimonial-stars-{{ ai_gen_id }} {
+    display: flex;
+    gap: 4px;
+    color: {{ block.settings.star_color }};
+    font-family: {{ block.settings.star_font_family }};
+    font-size: {{ block.settings.star_size }}px;
+    font-weight: {{ block.settings.star_font_weight }};
+    line-height: {{ block.settings.star_line_height }};
+    letter-spacing: {{ block.settings.star_letter_spacing }};
+  }
+
+  .ai-testimonial-quote-{{ ai_gen_id }} {
+    font-family: {{ block.settings.quote_font_family }};
+    font-size: {{ block.settings.quote_size }}px;
+    color: {{ block.settings.quote_color }};
+    line-height: {{ block.settings.quote_line_height }};
+    letter-spacing: {{ block.settings.quote_letter_spacing }};
+    font-weight: {{ block.settings.quote_font_weight }};
+    margin: 0;
+  }
+
+  .ai-testimonial-author-{{ ai_gen_id }} {
+    font-family: {{ block.settings.author_font_family }};
+    font-size: {{ block.settings.author_size }}px;
+    color: {{ block.settings.author_color }};
+    font-weight: {{ block.settings.author_font_weight }};
+    line-height: {{ block.settings.author_line_height }};
+    letter-spacing: {{ block.settings.author_letter_spacing }};
+    margin: 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-testimonials-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-testimonials-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.mobile_section_padding_top }}px 0 {{ block.settings.mobile_section_padding_bottom }}px;
+    }
+
+    .ai-testimonials-container-{{ ai_gen_id }} {
+      padding: 0 {{ block.settings.mobile_side_padding }}px;
+    }
+
+    .ai-testimonials-header-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-testimonials-mobile-top-{{ ai_gen_id }} {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: {{ block.settings.mobile_header_padding_bottom }}px;
+      border-bottom: {{ block.settings.mobile_divider_width }} solid {{ block.settings.mobile_divider_color }};
+      margin-bottom: 0;
+    }
+
+    .ai-testimonials-mobile-title-{{ ai_gen_id }},
+    .ai-testimonials-mobile-see-all-{{ ai_gen_id }} {
+      font-family: {{ block.settings.mobile_nav_font_family }};
+      font-size: {{ block.settings.mobile_nav_size }}px;
+      font-weight: {{ block.settings.mobile_nav_weight }};
+      color: {{ block.settings.mobile_nav_color }};
+      letter-spacing: {{ block.settings.mobile_nav_letter_spacing }};
+      line-height: 1;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .ai-testimonials-mobile-star-{{ ai_gen_id }} {
+      color: {{ block.settings.star_color }};
+      letter-spacing: 0;
+    }
+
+    .ai-testimonials-grid-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .ai-testimonial-card-{{ ai_gen_id }} {
+      border: 0;
+      border-radius: 0;
+      border-bottom: {{ block.settings.mobile_divider_width }} solid {{ block.settings.mobile_divider_color }};
+      background: transparent;
+      padding: {{ block.settings.mobile_card_padding_y }}px 0;
+      min-height: 0;
+      gap: {{ block.settings.mobile_content_gap }}px;
+    }
+
+    .ai-testimonial-card-{{ ai_gen_id }}.is-hidden-mobile {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-bottom-width: 0;
+      overflow: hidden;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition:
+        max-height 0.38s ease,
+        opacity 0.26s ease,
+        padding 0.32s ease,
+        transform 0.32s ease,
+        border-width 0.32s ease;
+    }
+
+    .ai-testimonial-card-{{ ai_gen_id }}.is-hidden-mobile.is-visible-mobile {
+      max-height: 420px;
+      opacity: 1;
+      padding: {{ block.settings.mobile_card_padding_y }}px 0;
+      border-bottom: {{ block.settings.mobile_divider_width }} solid {{ block.settings.mobile_divider_color }};
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .ai-testimonials-mobile-see-all-{{ ai_gen_id }} {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .ai-testimonials-mobile-see-all-{{ ai_gen_id }}.is-hidden {
+      display: none;
+    }
+
+    .ai-testimonial-stars-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_star_size }}px;
+      gap: {{ block.settings.mobile_star_gap }}px;
+      letter-spacing: {{ block.settings.mobile_star_letter_spacing }};
+    }
+
+    .ai-testimonial-quote-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_quote_size }}px;
+      line-height: {{ block.settings.mobile_quote_line_height }};
+      letter-spacing: {{ block.settings.mobile_quote_letter_spacing }};
+    }
+
+    .ai-testimonial-author-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_author_size }}px;
+      line-height: {{ block.settings.mobile_author_line_height }};
+      letter-spacing: {{ block.settings.mobile_author_letter_spacing }};
+      color: {{ block.settings.mobile_author_color }};
+    }
+
+    .ai-testimonials-mobile-footer-{{ ai_gen_id }} {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: {{ block.settings.mobile_footer_padding_top }}px;
+    }
+  }
+{% endstyle %}
+
+<testimonials-block-{{ ai_gen_id }} class="ai-testimonials-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-testimonials-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <div class="ai-testimonials-header-{{ ai_gen_id }}">
+        <div class="ai-testimonials-heading-box-{{ ai_gen_id }}">
+          <h2 class="ai-testimonials-heading-{{ ai_gen_id }}">
+            {{ block.settings.heading }}
+          </h2>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="ai-testimonials-mobile-top-{{ ai_gen_id }}">
+      <div class="ai-testimonials-mobile-title-{{ ai_gen_id }}">
+        {{ block.settings.mobile_header_text }}
+        <span>·</span>
+        <span class="ai-testimonials-mobile-star-{{ ai_gen_id }}">★</span>
+        <span>{{ block.settings.mobile_rating_text }}</span>
+      </div>
+
+    </div>
+
+    <div class="ai-testimonials-grid-{{ ai_gen_id }}">
+      {% for i in (1..10) %}
+        {% liquid
+          assign quote_key = 'testimonial_' | append: i | append: '_quote'
+          assign author_key = 'testimonial_' | append: i | append: '_author'
+          assign rating_key = 'testimonial_' | append: i | append: '_rating'
+
+          assign quote = block.settings[quote_key]
+          assign author = block.settings[author_key]
+          assign rating = block.settings[rating_key]
+        %}
+
+        <div class="ai-testimonial-card-{{ ai_gen_id }}{% if forloop.index > 2 %} is-hidden-mobile{% endif %}" data-review-card>
+          <div class="ai-testimonial-stars-{{ ai_gen_id }}">
+            {% for star in (1..rating) %}
+              <span>★</span>
+            {% endfor %}
+          </div>
+
+          {% if quote != blank %}
+            <p class="ai-testimonial-quote-{{ ai_gen_id }}">
+              "{{ quote }}"
+            </p>
+          {% endif %}
+
+          {% if author != blank %}
+            <p class="ai-testimonial-author-{{ ai_gen_id }}">
+              {{ author }}
+            </p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if block.settings.see_all_text != blank %}
+      <div class="ai-testimonials-mobile-footer-{{ ai_gen_id }}">
+        <button type="button" class="ai-testimonials-mobile-see-all-{{ ai_gen_id }}" data-show-more-reviews>
+          {{ block.settings.see_all_text }}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</testimonials-block-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TestimonialsBlock{{ ai_gen_id }} extends HTMLElement {
+      connectedCallback() {
+        this.showMoreButton = this.querySelector('[data-show-more-reviews]');
+        this.cards = Array.from(this.querySelectorAll('[data-review-card]'));
+        this.visibleCount = 2;
+        this.maxVisible = Math.min(10, this.cards.length);
+
+        if (!this.showMoreButton) return;
+
+        this.showMoreButton.addEventListener('click', () => {
+          this.visibleCount = Math.min(this.visibleCount + 2, this.maxVisible);
+          this.updateVisibleReviews();
+        });
+
+        this.updateVisibleReviews();
+      }
+
+      updateVisibleReviews() {
+        this.cards.forEach((card, index) => {
+          if (index < this.visibleCount) {
+            card.classList.add('is-visible-mobile');
+          }
+        });
+
+        if (this.showMoreButton && this.visibleCount >= this.maxVisible) {
+          this.showMoreButton.classList.add('is-hidden');
+        }
+      }
+    }
+
+    customElements.define('testimonials-block-{{ ai_gen_id }}', TestimonialsBlock{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "06 / WHAT OWNERS SAY"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size desktop",
+      "min": 10,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Heading text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "Mobile review header"
+    },
+    {
+      "type": "text",
+      "id": "mobile_header_text",
+      "label": "Mobile header text",
+      "default": "REVIEWS"
+    },
+    {
+      "type": "text",
+      "id": "mobile_rating_text",
+      "label": "Mobile rating text",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "see_all_text",
+      "label": "See all text",
+      "default": "Show More Reviews"
+    },
+    {
+      "type": "text",
+      "id": "mobile_nav_font_family",
+      "label": "Mobile header/footer font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "range",
+      "id": "mobile_nav_size",
+      "label": "Mobile header/footer size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "mobile_nav_weight",
+      "label": "Mobile header/footer weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "mobile_nav_color",
+      "label": "Mobile header/footer color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "mobile_nav_letter_spacing",
+      "label": "Mobile header/footer letter spacing",
+      "default": "0.35em"
+    },
+    {
+      "type": "header",
+      "content": "Heading bordered box"
+    },
+    {
+      "type": "color",
+      "id": "heading_background",
+      "label": "Heading box background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_border_width",
+      "label": "Heading border width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "heading_border_color",
+      "label": "Heading border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_border_radius",
+      "label": "Heading border radius",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_y",
+      "label": "Heading padding top/bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_x",
+      "label": "Heading padding left/right",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "heading_bottom_spacing",
+      "label": "Heading bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 700,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Desktop side padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding desktop",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_top",
+      "label": "Mobile padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_bottom",
+      "label": "Mobile padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Space between cards desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_header_padding_bottom",
+      "label": "Mobile header bottom padding",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding_y",
+      "label": "Mobile review top/bottom padding",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 17
+    },
+    {
+      "type": "range",
+      "id": "mobile_footer_padding_top",
+      "label": "Mobile footer top padding",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 17
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_gap",
+      "label": "Mobile content gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "mobile_divider_width",
+      "label": "Mobile divider width",
+      "default": "1px"
+    },
+    {
+      "type": "color",
+      "id": "mobile_divider_color",
+      "label": "Mobile divider color",
+      "default": "#d8d0c3"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f7f3ea"
+    },
+    {
+      "type": "header",
+      "content": "Card style desktop"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "label": "Card border width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_content_gap",
+      "label": "Card content gap desktop",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_min_height",
+      "label": "Card min height desktop",
+      "min": 0,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 180
+    },
+    {
+      "type": "header",
+      "content": "Stars"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star size desktop",
+      "min": 8,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_star_size",
+      "label": "Star size mobile",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "mobile_star_gap",
+      "label": "Star gap mobile",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#e33b1f"
+    },
+    {
+      "type": "text",
+      "id": "mobile_star_letter_spacing",
+      "label": "Mobile star letter spacing",
+      "default": "0.08em"
+    },
+    {
+      "type": "header",
+      "content": "Quote and author"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Quote size desktop",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_quote_size",
+      "label": "Quote size mobile",
+      "min": 10,
+      "max": 26,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote color",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "mobile_quote_line_height",
+      "label": "Mobile quote line height",
+      "default": "1.28"
+    },
+    {
+      "type": "text",
+      "id": "mobile_quote_letter_spacing",
+      "label": "Mobile quote letter spacing",
+      "default": "-0.02em"
+    },
+    {
+      "type": "range",
+      "id": "author_size",
+      "label": "Author size desktop",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_author_size",
+      "label": "Author size mobile",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "color",
+      "id": "author_color",
+      "label": "Author color desktop",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "mobile_author_color",
+      "label": "Author color mobile",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "mobile_author_line_height",
+      "label": "Mobile author line height",
+      "default": "1.2"
+    },
+    {
+      "type": "text",
+      "id": "mobile_author_letter_spacing",
+      "label": "Mobile author letter spacing",
+      "default": "0.35em"
+    },
+    {
+      "type": "header",
+      "content": "Font families"
+    },
+    {
+      "type": "text",
+      "id": "body_font_family",
+      "label": "Body font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "heading_font_family",
+      "label": "Heading font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "star_font_family",
+      "label": "Star font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "quote_font_family",
+      "label": "Quote font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "author_font_family",
+      "label": "Author font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "header",
+      "content": "Font weights"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Heading font weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "star_font_weight",
+      "label": "Star font weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "quote_font_weight",
+      "label": "Quote font weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "author_font_weight",
+      "label": "Author font weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Typography advanced"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_height",
+      "label": "Heading line height",
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "star_line_height",
+      "label": "Star line height",
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "star_letter_spacing",
+      "label": "Star letter spacing desktop",
+      "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "quote_line_height",
+      "label": "Quote line height desktop",
+      "default": "1.5"
+    },
+    {
+      "type": "text",
+      "id": "quote_letter_spacing",
+      "label": "Quote letter spacing desktop",
+      "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "author_line_height",
+      "label": "Author line height desktop",
+      "default": "1.2"
+    },
+    {
+      "type": "text",
+      "id": "author_letter_spacing",
+      "label": "Author letter spacing desktop",
+      "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 1"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_1_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_1_quote",
+      "label": "Quote",
+      "default": "Drops into my battlestation like it was made for it."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_1_author",
+      "label": "Author",
+      "default": "— @kazu_64"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 2"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_2_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_2_quote",
+      "label": "Quote",
+      "default": "300+ cars on glass. This is the one everyone reaches for first."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_2_author",
+      "label": "Author",
+      "default": "— @kaido_diecast"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 3"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_3_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_3_quote",
+      "label": "Quote",
+      "default": "Hits the same spot Initial D did when I was 15."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_3_author",
+      "label": "Author",
+      "default": "— @touge_dad"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 4"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_4_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_4_quote",
+      "label": "Quote",
+      "default": "Smooth, premium, and looks better in person than the photos."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_4_author",
+      "label": "Author",
+      "default": "— @garage_64"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 5"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_5_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_5_quote",
+      "label": "Quote",
+      "default": "The finish feels solid and the details make the whole setup feel real."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_5_author",
+      "label": "Author",
+      "default": "— @mini_motorclub"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 6"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_6_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_6_quote",
+      "label": "Quote",
+      "default": "Exactly what my shelf was missing. Clean design and really fun to display."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_6_author",
+      "label": "Author",
+      "default": "— @scale_scene"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 7"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_7_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_7_quote",
+      "label": "Quote",
+      "default": "My son and I both use it. It instantly makes the cars feel more alive."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_7_author",
+      "label": "Author",
+      "default": "— @dadgarage"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 8"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_8_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_8_quote",
+      "label": "Quote",
+      "default": "Packaging was clean and the product looked premium right out of the box."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_8_author",
+      "label": "Author",
+      "default": "— @deskdrifter"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 9"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_9_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_9_quote",
+      "label": "Quote",
+      "default": "I bought one and came back for another. It photographs so well."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_9_author",
+      "label": "Author",
+      "default": "— @diecastroom"
+    },
+    {
+      "type": "header",
+      "content": "Testimonial 10"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_10_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_10_quote",
+      "label": "Quote",
+      "default": "The details are sharp, the size is right, and it feels made for collectors."
+    },
+    {
+      "type": "text",
+      "id": "testimonial_10_author",
+      "label": "Author",
+      "default": "— @collector_lane"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials"
+    }
+  ]
+}
+{% endschema %}

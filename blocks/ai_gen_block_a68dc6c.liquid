@@ -1,0 +1,1439 @@
+{% doc %}
+  @prompt
+    How it works 3 step horizontal section with top label, heading, icon circles, dotted arrows, step numbers, heading and text.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  {{ block.settings.kicker_font | font_face }}
+  {{ block.settings.heading_font | font_face }}
+  {{ block.settings.step_font | font_face }}
+  {{ block.settings.body_font | font_face }}
+
+  .ai-how-steps-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-top: {{ block.settings.desktop_padding_top }}px;
+    padding-bottom: {{ block.settings.desktop_padding_bottom }}px;
+    padding-left: {{ block.settings.desktop_padding_left }}px;
+    padding-right: {{ block.settings.desktop_padding_right }}px;
+    background: {{ block.settings.background_color }};
+  }
+
+  .ai-how-steps__header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.header_alignment }};
+    max-width: {{ block.settings.header_max_width }}px;
+    margin: 0 auto {{ block.settings.header_bottom_gap }}px;
+  }
+
+  .ai-how-steps__kicker-{{ ai_gen_id }} {
+    font-family: {{ block.settings.kicker_font.family }}, {{ block.settings.kicker_font.fallback_families }};
+    font-style: {{ block.settings.kicker_font.style }};
+    font-weight: {{ block.settings.kicker_weight }};
+    font-size: {{ block.settings.kicker_size }}px;
+    line-height: {{ block.settings.kicker_line_height }};
+    letter-spacing: {{ block.settings.kicker_letter_spacing }}px;
+    color: {{ block.settings.kicker_color }};
+    text-transform: uppercase;
+    margin: 0 0 {{ block.settings.kicker_bottom_gap }}px;
+  }
+
+  .ai-how-steps__heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-style: {{ block.settings.heading_font.style }};
+    font-weight: {{ block.settings.heading_weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: {{ block.settings.heading_line_height }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+  }
+
+  .ai-how-steps__scroll-{{ ai_gen_id }} {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ai-how-steps__scroll-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ai-how-steps__wrapper-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: start;
+    gap: {{ block.settings.desktop_gap }}px;
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-how-steps__step-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ai-how-steps__icon-circle-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_circle_size }}px;
+    height: {{ block.settings.icon_circle_size }}px;
+    border-radius: 50%;
+    background: {{ block.settings.icon_background_color }};
+    border: {{ block.settings.icon_border_width }}px solid {{ block.settings.icon_border_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: {{ block.settings.icon_bottom_gap }}px;
+  }
+
+  .ai-how-steps__icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-how-steps__icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+  }
+
+  .ai-how-steps__number-{{ ai_gen_id }} {
+    font-family: {{ block.settings.step_font.family }}, {{ block.settings.step_font.fallback_families }};
+    font-style: {{ block.settings.step_font.style }};
+    font-weight: {{ block.settings.number_weight }};
+    font-size: {{ block.settings.number_size }}px;
+    line-height: {{ block.settings.number_line_height }};
+    letter-spacing: {{ block.settings.number_letter_spacing }}px;
+    color: {{ block.settings.number_color }};
+    margin: 0 0 {{ block.settings.number_bottom_gap }}px;
+  }
+
+  .ai-how-steps__step-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.step_font.family }}, {{ block.settings.step_font.fallback_families }};
+    font-style: {{ block.settings.step_font.style }};
+    font-weight: {{ block.settings.step_heading_weight }};
+    font-size: {{ block.settings.step_heading_size }}px;
+    line-height: {{ block.settings.step_heading_line_height }};
+    letter-spacing: {{ block.settings.step_heading_letter_spacing }}px;
+    color: {{ block.settings.step_heading_color }};
+    margin: 0 0 {{ block.settings.step_heading_bottom_gap }}px;
+  }
+
+  .ai-how-steps__text-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font.family }}, {{ block.settings.body_font.fallback_families }};
+    font-style: {{ block.settings.body_font.style }};
+    font-weight: {{ block.settings.text_weight }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: {{ block.settings.text_line_height }};
+    letter-spacing: {{ block.settings.text_letter_spacing }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    max-width: {{ block.settings.text_max_width }}px;
+  }
+
+  .ai-how-steps__arrow-{{ ai_gen_id }} {
+    width: {{ block.settings.arrow_width }}px;
+    height: {{ block.settings.icon_circle_size }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: {{ block.settings.arrow_top_offset }}px;
+  }
+
+  .ai-how-steps__arrow-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 16px;
+    overflow: visible;
+  }
+
+  .ai-how-steps__arrow-line-{{ ai_gen_id }} {
+    stroke: {{ block.settings.arrow_color }};
+    stroke-width: {{ block.settings.arrow_thickness }};
+    stroke-dasharray: {{ block.settings.arrow_dash_size }} {{ block.settings.arrow_gap_size }};
+  }
+
+  .ai-how-steps__arrow-head-{{ ai_gen_id }} {
+    stroke: {{ block.settings.arrow_color }};
+    stroke-width: {{ block.settings.arrow_thickness }};
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-how-steps-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_width_percent }}%;
+      padding-top: {{ block.settings.mobile_padding_top }}px;
+      padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+      padding-left: {{ block.settings.mobile_padding_left }}px;
+      padding-right: {{ block.settings.mobile_padding_right }}px;
+    }
+
+    .ai-how-steps__header-{{ ai_gen_id }} {
+      margin-bottom: {{ block.settings.mobile_header_bottom_gap }}px;
+    }
+
+    .ai-how-steps__kicker-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_kicker_size }}px;
+      line-height: {{ block.settings.mobile_kicker_line_height }};
+      letter-spacing: {{ block.settings.mobile_kicker_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_kicker_bottom_gap }}px;
+    }
+
+    .ai-how-steps__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_heading_size }}px;
+      line-height: {{ block.settings.mobile_heading_line_height }};
+      letter-spacing: {{ block.settings.mobile_heading_letter_spacing }}px;
+    }
+
+    .ai-how-steps__wrapper-{{ ai_gen_id }} {
+      {% if block.settings.mobile_layout == 'stack' %}
+        grid-template-columns: 1fr;
+        gap: {{ block.settings.mobile_gap }}px;
+      {% else %}
+        grid-template-columns: {{ block.settings.mobile_step_width }}px {{ block.settings.mobile_arrow_width }}px {{ block.settings.mobile_step_width }}px {{ block.settings.mobile_arrow_width }}px {{ block.settings.mobile_step_width }}px;
+        gap: {{ block.settings.mobile_horizontal_gap }}px;
+        width: max-content;
+        max-width: none;
+        min-width: {{ block.settings.mobile_scroll_width }}px;
+        margin: 0;
+      {% endif %}
+    }
+
+    {% if block.settings.mobile_layout == 'scroll' %}
+      .ai-how-steps__step-{{ ai_gen_id }} {
+        width: {{ block.settings.mobile_step_width }}px;
+      }
+    {% endif %}
+
+    {% if block.settings.mobile_layout == 'stack' %}
+      .ai-how-steps__arrow-{{ ai_gen_id }} {
+        display: none;
+      }
+    {% endif %}
+
+    .ai-how-steps__icon-circle-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_icon_circle_size }}px;
+      height: {{ block.settings.mobile_icon_circle_size }}px;
+      margin-bottom: {{ block.settings.mobile_icon_bottom_gap }}px;
+    }
+
+    .ai-how-steps__icon-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_icon_size }}px;
+      height: {{ block.settings.mobile_icon_size }}px;
+    }
+
+    .ai-how-steps__number-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_number_size }}px;
+      line-height: {{ block.settings.mobile_number_line_height }};
+      margin-bottom: {{ block.settings.mobile_number_bottom_gap }}px;
+    }
+
+    .ai-how-steps__step-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_step_heading_size }}px;
+      line-height: {{ block.settings.mobile_step_heading_line_height }};
+      margin-bottom: {{ block.settings.mobile_step_heading_bottom_gap }}px;
+    }
+
+    .ai-how-steps__text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_text_size }}px;
+      line-height: {{ block.settings.mobile_text_line_height }};
+      max-width: {{ block.settings.mobile_text_max_width }}px;
+    }
+
+    .ai-how-steps__arrow-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_arrow_width }}px;
+      height: {{ block.settings.mobile_icon_circle_size }}px;
+    }
+
+
+    /* Force mobile to fit all 3 steps in one screen without horizontal swipe */
+    .ai-how-steps__scroll-{{ ai_gen_id }} {
+      overflow-x: visible !important;
+      overflow-y: visible !important;
+      width: 100% !important;
+    }
+
+    .ai-how-steps__wrapper-{{ ai_gen_id }} {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr) 16px minmax(0, 1fr) !important;
+      gap: 4px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 auto !important;
+      align-items: start !important;
+    }
+
+    .ai-how-steps__step-{{ ai_gen_id }} {
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+
+    .ai-how-steps__arrow-{{ ai_gen_id }} {
+      display: flex !important;
+      width: 16px !important;
+      min-width: 16px !important;
+      height: 50px !important;
+      padding-top: 0 !important;
+      align-items: center !important;
+    }
+
+    .ai-how-steps__arrow-{{ ai_gen_id }} svg {
+      width: 16px !important;
+      height: 10px !important;
+    }
+
+    .ai-how-steps__icon-circle-{{ ai_gen_id }} {
+      width: 50px !important;
+      height: 50px !important;
+      margin-bottom: 6px !important;
+    }
+
+    .ai-how-steps__icon-{{ ai_gen_id }} {
+      width: 24px !important;
+      height: 24px !important;
+    }
+
+    .ai-how-steps__number-{{ ai_gen_id }} {
+      font-size: 18px !important;
+      line-height: 1 !important;
+      margin-bottom: 4px !important;
+    }
+
+    .ai-how-steps__step-heading-{{ ai_gen_id }} {
+      font-size: 12px !important;
+      line-height: 1.1 !important;
+      margin-bottom: 4px !important;
+      word-break: normal !important;
+    }
+
+    .ai-how-steps__text-{{ ai_gen_id }} {
+      font-size: 10px !important;
+      line-height: 1.2 !important;
+      max-width: 100% !important;
+    }
+
+    @media screen and (max-width: 360px) {
+      .ai-how-steps__wrapper-{{ ai_gen_id }} {
+        grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr) 12px minmax(0, 1fr) !important;
+        gap: 3px !important;
+      }
+
+      .ai-how-steps__arrow-{{ ai_gen_id }} {
+        width: 12px !important;
+        min-width: 12px !important;
+      }
+
+      .ai-how-steps__arrow-{{ ai_gen_id }} svg {
+        width: 12px !important;
+      }
+
+      .ai-how-steps__icon-circle-{{ ai_gen_id }} {
+        width: 44px !important;
+        height: 44px !important;
+      }
+
+      .ai-how-steps__icon-{{ ai_gen_id }} {
+        width: 22px !important;
+        height: 22px !important;
+      }
+
+      .ai-how-steps__step-heading-{{ ai_gen_id }} {
+        font-size: 11px !important;
+      }
+
+      .ai-how-steps__text-{{ ai_gen_id }} {
+        font-size: 9px !important;
+      }
+    }
+  }
+{% endstyle %}
+
+<how-steps-{{ ai_gen_id }}
+  class="ai-how-steps-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-how-steps__header-{{ ai_gen_id }}">
+    {% if block.settings.kicker != blank %}
+      <p class="ai-how-steps__kicker-{{ ai_gen_id }}">{{ block.settings.kicker }}</p>
+    {% endif %}
+
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-how-steps__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+  </div>
+
+  <div class="ai-how-steps__scroll-{{ ai_gen_id }}">
+    <div class="ai-how-steps__wrapper-{{ ai_gen_id }}">
+      {% for i in (1..3) %}
+        {% liquid
+          assign icon_key = 'step_' | append: i | append: '_icon'
+          assign heading_key = 'step_' | append: i | append: '_heading'
+          assign text_key = 'step_' | append: i | append: '_text'
+
+          assign icon = block.settings[icon_key]
+          assign heading = block.settings[heading_key]
+          assign text = block.settings[text_key]
+        %}
+
+        <div class="ai-how-steps__step-{{ ai_gen_id }}">
+          <div class="ai-how-steps__icon-circle-{{ ai_gen_id }}">
+            <span class="ai-how-steps__icon-{{ ai_gen_id }}">
+              {% case icon %}
+                {% when 'plug' %}
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M8 2v7M16 2v7" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 9h12v4a6 6 0 0 1-12 0V9Z" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M12 19v3" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                {% when 'car' %}
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M3 14h2l2-5h8l4 5h2v4h-2.2a2 2 0 0 1-3.6 0H8.8a2 2 0 0 1-3.6 0H3v-4Z" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M7 14h10" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="7" cy="18" r="1.5" stroke-width="2"/>
+                    <circle cx="17" cy="18" r="1.5" stroke-width="2"/>
+                  </svg>
+                {% when 'drift' %}
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M18.5 7A7 7 0 0 0 6 7.5" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M18.5 7V3.5H22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5.5 17A7 7 0 0 0 18 16.5" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5.5 17v3.5H2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                    <path d="M12 8v5" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 16h.01" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+              {% endcase %}
+            </span>
+          </div>
+
+          <p class="ai-how-steps__number-{{ ai_gen_id }}">{{ i }}</p>
+
+          {% if heading != blank %}
+            <h3 class="ai-how-steps__step-heading-{{ ai_gen_id }}">{{ heading }}</h3>
+          {% endif %}
+
+          {% if text != blank %}
+            <p class="ai-how-steps__text-{{ ai_gen_id }}">{{ text }}</p>
+          {% endif %}
+        </div>
+
+        {% unless forloop.last %}
+          <div class="ai-how-steps__arrow-{{ ai_gen_id }}" aria-hidden="true">
+            <svg viewBox="0 0 180 20" preserveAspectRatio="none">
+              <line class="ai-how-steps__arrow-line-{{ ai_gen_id }}" x1="0" y1="10" x2="160" y2="10"></line>
+              <path class="ai-how-steps__arrow-head-{{ ai_gen_id }}" d="M154 4 L164 10 L154 16"></path>
+            </svg>
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+</how-steps-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HowSteps{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+
+    if (!customElements.get('how-steps-{{ ai_gen_id }}')) {
+      customElements.define('how-steps-{{ ai_gen_id }}', HowSteps{{ ai_gen_id }});
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "How it works steps",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Top heading"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Small label",
+      "default": "02 / How it works"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Plug in → Place your car →\nEnjoy the drift."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+
+    {
+      "type": "header",
+      "content": "Step 1"
+    },
+    {
+      "type": "select",
+      "id": "step_1_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "plug", "label": "Plug" },
+        { "value": "car", "label": "Car" },
+        { "value": "drift", "label": "Drift" }
+      ],
+      "default": "plug"
+    },
+    {
+      "type": "text",
+      "id": "step_1_heading",
+      "label": "Heading",
+      "default": "Plug it in"
+    },
+    {
+      "type": "textarea",
+      "id": "step_1_text",
+      "label": "Text",
+      "default": "Simple USB power connection."
+    },
+
+    {
+      "type": "header",
+      "content": "Step 2"
+    },
+    {
+      "type": "select",
+      "id": "step_2_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "plug", "label": "Plug" },
+        { "value": "car", "label": "Car" },
+        { "value": "drift", "label": "Drift" }
+      ],
+      "default": "car"
+    },
+    {
+      "type": "text",
+      "id": "step_2_heading",
+      "label": "Heading",
+      "default": "Place your car"
+    },
+    {
+      "type": "textarea",
+      "id": "step_2_text",
+      "label": "Text",
+      "default": "Works with all 1:64 scale cars."
+    },
+
+    {
+      "type": "header",
+      "content": "Step 3"
+    },
+    {
+      "type": "select",
+      "id": "step_3_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "plug", "label": "Plug" },
+        { "value": "car", "label": "Car" },
+        { "value": "drift", "label": "Drift" }
+      ],
+      "default": "drift"
+    },
+    {
+      "type": "text",
+      "id": "step_3_heading",
+      "label": "Heading",
+      "default": "Enjoy the drift"
+    },
+    {
+      "type": "textarea",
+      "id": "step_3_text",
+      "label": "Text",
+      "default": "Smooth 360° drifting experience."
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Steps max width",
+      "min": 700,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1180
+    },
+    {
+      "type": "range",
+      "id": "header_max_width",
+      "label": "Heading max width",
+      "min": 300,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 620
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "label": "Left padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "label": "Right padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Gap between items/arrows",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "header_bottom_gap",
+      "label": "Space below heading",
+      "min": 10,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "stack", "label": "Stack vertical" },
+        { "value": "scroll", "label": "Horizontal scroll" }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "range",
+      "id": "mobile_width_percent",
+      "label": "Mobile width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_scroll_width",
+      "label": "Mobile scroll width",
+      "min": 500,
+      "max": 1200,
+      "step": 20,
+      "unit": "px",
+      "default": 760
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_width",
+      "label": "Mobile step width",
+      "min": 80,
+      "max": 180,
+      "step": 5,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Mobile left padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Mobile right padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile stacked gap",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "mobile_horizontal_gap",
+      "label": "Mobile horizontal gap",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_header_bottom_gap",
+      "label": "Mobile space below heading",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "header",
+      "content": "Icon style"
+    },
+    {
+      "type": "range",
+      "id": "icon_circle_size",
+      "label": "Circle size",
+      "min": 50,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "default": 92
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_circle_size",
+      "label": "Mobile circle size",
+      "min": 50,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_size",
+      "label": "Mobile icon size",
+      "min": 20,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "icon_bottom_gap",
+      "label": "Space below icon",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_icon_bottom_gap",
+      "label": "Mobile space below icon",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "icon_border_width",
+      "label": "Icon circle border width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Arrow style"
+    },
+    {
+      "type": "range",
+      "id": "arrow_width",
+      "label": "Arrow width",
+      "min": 80,
+      "max": 260,
+      "step": 4,
+      "unit": "px",
+      "default": 180
+    },
+    {
+      "type": "range",
+      "id": "mobile_arrow_width",
+      "label": "Mobile arrow width",
+      "min": 50,
+      "max": 180,
+      "step": 2,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "arrow_top_offset",
+      "label": "Arrow vertical offset",
+      "min": -20,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "arrow_thickness",
+      "label": "Arrow thickness",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "arrow_dash_size",
+      "label": "Dash size",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "arrow_gap_size",
+      "label": "Dash gap",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+
+    {
+      "type": "header",
+      "content": "Typography fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "kicker_font",
+      "label": "Small label font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "step_font",
+      "label": "Step heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Text font",
+      "default": "assistant_n4"
+    },
+
+    {
+      "type": "header",
+      "content": "Top text typography"
+    },
+    {
+      "type": "select",
+      "id": "kicker_weight",
+      "label": "Small label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Small label size",
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_size",
+      "label": "Mobile small label size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "kicker_line_height",
+      "label": "Small label line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_line_height",
+      "label": "Mobile small label line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "kicker_letter_spacing",
+      "label": "Small label letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.8
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_letter_spacing",
+      "label": "Mobile small label letter spacing",
+      "min": 0,
+      "max": 8,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0.6
+    },
+    {
+      "type": "range",
+      "id": "kicker_bottom_gap",
+      "label": "Small label bottom gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_bottom_gap",
+      "label": "Mobile small label bottom gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+
+    {
+      "type": "header",
+      "content": "Heading typography"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile heading size",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_line_height",
+      "label": "Mobile heading line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Mobile heading letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.3
+    },
+
+    {
+      "type": "header",
+      "content": "Step text typography"
+    },
+    {
+      "type": "select",
+      "id": "number_weight",
+      "label": "Number weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "number_size",
+      "label": "Number size",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mobile_number_size",
+      "label": "Mobile number size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "number_line_height",
+      "label": "Number line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_number_line_height",
+      "label": "Mobile number line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "number_letter_spacing",
+      "label": "Number letter spacing",
+      "min": -1,
+      "max": 5,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "number_bottom_gap",
+      "label": "Number bottom gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "mobile_number_bottom_gap",
+      "label": "Mobile number bottom gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "step_heading_weight",
+      "label": "Step heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "step_heading_size",
+      "label": "Step heading size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_heading_size",
+      "label": "Mobile step heading size",
+      "min": 12,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "step_heading_line_height",
+      "label": "Step heading line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_heading_line_height",
+      "label": "Mobile step heading line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "step_heading_letter_spacing",
+      "label": "Step heading letter spacing",
+      "min": -1,
+      "max": 5,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "step_heading_bottom_gap",
+      "label": "Step heading bottom gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_heading_bottom_gap",
+      "label": "Mobile step heading bottom gap",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Description weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Description size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_size",
+      "label": "Mobile description size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "Description line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_line_height",
+      "label": "Mobile description line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "text_letter_spacing",
+      "label": "Description letter spacing",
+      "min": -1,
+      "max": 5,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "text_max_width",
+      "label": "Description max width",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_max_width",
+      "label": "Mobile description max width",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 120
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "kicker_color",
+      "label": "Small label color",
+      "default": "#a94e45"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "icon_background_color",
+      "label": "Icon background",
+      "default": "#f4eee6"
+    },
+    {
+      "type": "color",
+      "id": "icon_border_color",
+      "label": "Icon border",
+      "default": "#f4eee6"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#6f6a64"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#b64f43"
+    },
+    {
+      "type": "color",
+      "id": "step_heading_color",
+      "label": "Step heading color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description color",
+      "default": "#222222"
+    }
+  ],
+  "presets": [
+    {
+      "name": "How it works steps"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1265 @@
+{% doc %}
+  @prompt
+    Horizontal timeline with fully customizable typography, colors, spacing, desktop and mobile controls.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  {{ block.settings.kicker_font | font_face }}
+  {{ block.settings.heading_font | font_face }}
+  {{ block.settings.date_font | font_face }}
+  {{ block.settings.milestone_title_font | font_face }}
+  {{ block.settings.description_font | font_face }}
+
+  .ai-timeline-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding-top: {{ block.settings.desktop_padding_top }}px;
+    padding-bottom: {{ block.settings.desktop_padding_bottom }}px;
+    padding-left: {{ block.settings.desktop_padding_left }}px;
+    padding-right: {{ block.settings.desktop_padding_right }}px;
+    background-color: {{ block.settings.background_color }};
+    overflow: hidden;
+   
+  }
+
+  .ai-timeline-kicker-{{ ai_gen_id }} {
+    font-family: {{ block.settings.kicker_font.family }}, {{ block.settings.kicker_font.fallback_families }};
+    font-style: {{ block.settings.kicker_font.style }};
+    font-weight: {{ block.settings.kicker_font_weight }};
+    font-size: {{ block.settings.kicker_size }}px;
+    line-height: {{ block.settings.kicker_line_height }};
+    letter-spacing: {{ block.settings.kicker_letter_spacing }}px;
+    color: {{ block.settings.kicker_color }};
+    text-transform: {% if block.settings.kicker_uppercase %}uppercase{% else %}none{% endif %};
+    margin: 0 0 {{ block.settings.kicker_margin_bottom }}px 0;
+  }
+
+  .ai-timeline-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font.family }}, {{ block.settings.heading_font.fallback_families }};
+    font-style: {{ block.settings.heading_font.style }};
+    font-weight: {{ block.settings.heading_font_weight }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: {{ block.settings.heading_line_height }};
+    letter-spacing: {{ block.settings.heading_letter_spacing }}px;
+    margin: 0 0 {{ block.settings.heading_margin_bottom }}px 0;
+  }
+
+  .ai-timeline-heading-primary-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_primary_color }};
+  }
+
+  .ai-timeline-heading-secondary-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_secondary_color }};
+  }
+
+  .ai-timeline-wrap-{{ ai_gen_id }} {
+    position: relative;
+    overflow-x: {% if block.settings.mobile_behavior == 'scroll' %}auto{% else %}visible{% endif %};
+    overflow-y: visible;
+    padding-top: {{ block.settings.timeline_top_spacing }}px;
+  }
+
+  .ai-timeline-items-{{ ai_gen_id }} {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: {{ block.settings.desktop_column_gap }}px;
+    min-width: {% if block.settings.mobile_behavior == 'scroll' %}900px{% else %}0{% endif %};
+  }
+
+  .ai-timeline-line-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.dot_size | divided_by: 2 }}px;
+    left: 0;
+    right: 0;
+    height: {{ block.settings.line_thickness }}px;
+    background-color: {{ block.settings.line_color }};
+    z-index: 1;
+  }
+
+  .ai-timeline-item-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 2;
+    padding-top: {{ block.settings.dot_spacing_bottom | plus: block.settings.dot_size }}px;
+  }
+
+  .ai-timeline-dot-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: {{ block.settings.dot_size }}px;
+    height: {{ block.settings.dot_size }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.dot_color }};
+    border: {{ block.settings.dot_border_width }}px solid {{ block.settings.dot_border_color }};
+    z-index: 3;
+  }
+
+  .ai-timeline-date-{{ ai_gen_id }} {
+    font-family: {{ block.settings.date_font.family }}, {{ block.settings.date_font.fallback_families }};
+    font-style: {{ block.settings.date_font.style }};
+    font-weight: {{ block.settings.date_font_weight }};
+    font-size: {{ block.settings.date_size }}px;
+    line-height: {{ block.settings.date_line_height }};
+    letter-spacing: {{ block.settings.date_letter_spacing }}px;
+    color: {{ block.settings.date_color }};
+    text-transform: {% if block.settings.date_uppercase %}uppercase{% else %}none{% endif %};
+    margin: 0 0 {{ block.settings.date_margin_bottom }}px 0;
+  }
+
+  .ai-timeline-title-{{ ai_gen_id }} {
+    font-family: {{ block.settings.milestone_title_font.family }}, {{ block.settings.milestone_title_font.fallback_families }};
+    font-style: {{ block.settings.milestone_title_font.style }};
+    font-weight: {{ block.settings.milestone_title_font_weight }};
+    font-size: {{ block.settings.milestone_title_size }}px;
+    line-height: {{ block.settings.milestone_title_line_height }};
+    letter-spacing: {{ block.settings.milestone_title_letter_spacing }}px;
+    color: {{ block.settings.milestone_title_color }};
+    margin: 0 0 {{ block.settings.title_margin_bottom }}px 0;
+  }
+
+  .ai-timeline-description-{{ ai_gen_id }} {
+    font-family: {{ block.settings.description_font.family }}, {{ block.settings.description_font.fallback_families }};
+    font-style: {{ block.settings.description_font.style }};
+    font-weight: {{ block.settings.description_font_weight }};
+    font-size: {{ block.settings.description_size }}px;
+    line-height: {{ block.settings.description_line_height }};
+    letter-spacing: {{ block.settings.description_letter_spacing }}px;
+    color: {{ block.settings.description_color }};
+    margin: 0;
+    max-width: {{ block.settings.description_max_width }}px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-timeline-{{ ai_gen_id }} {
+      width: {{ block.settings.mobile_width_percent }}%;
+      padding-top: {{ block.settings.mobile_padding_top }}px;
+      padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+      padding-left: {{ block.settings.mobile_padding_left }}px;
+      padding-right: {{ block.settings.mobile_padding_right }}px;
+    }
+
+    .ai-timeline-kicker-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_kicker_size }}px;
+      line-height: {{ block.settings.mobile_kicker_line_height }};
+      letter-spacing: {{ block.settings.mobile_kicker_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_kicker_margin_bottom }}px;
+    }
+
+    .ai-timeline-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_heading_size }}px;
+      line-height: {{ block.settings.mobile_heading_line_height }};
+      letter-spacing: {{ block.settings.mobile_heading_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_heading_margin_bottom }}px;
+    }
+
+    {% if block.settings.mobile_behavior == 'stack' %}
+      .ai-timeline-items-{{ ai_gen_id }} {
+        display: flex;
+        flex-direction: column;
+        gap: {{ block.settings.mobile_item_gap }}px;
+        min-width: 0;
+      }
+
+      .ai-timeline-line-{{ ai_gen_id }} {
+        top: 0;
+        bottom: 0;
+        left: {{ block.settings.dot_size | divided_by: 2 }}px;
+        right: auto;
+        width: {{ block.settings.line_thickness }}px;
+        height: auto;
+      }
+
+      .ai-timeline-item-{{ ai_gen_id }} {
+        padding-top: 0;
+        padding-left: {{ block.settings.mobile_stack_text_indent }}px;
+      }
+
+      .ai-timeline-dot-{{ ai_gen_id }} {
+        left: 0;
+        top: 4px;
+      }
+    {% else %}
+      .ai-timeline-items-{{ ai_gen_id }} {
+        column-gap: {{ block.settings.mobile_column_gap }}px;
+      }
+    {% endif %}
+
+    .ai-timeline-date-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_date_size }}px;
+      line-height: {{ block.settings.mobile_date_line_height }};
+      letter-spacing: {{ block.settings.mobile_date_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_date_margin_bottom }}px;
+    }
+
+    .ai-timeline-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_milestone_title_size }}px;
+      line-height: {{ block.settings.mobile_milestone_title_line_height }};
+      letter-spacing: {{ block.settings.mobile_milestone_title_letter_spacing }}px;
+      margin-bottom: {{ block.settings.mobile_title_margin_bottom }}px;
+    }
+
+    .ai-timeline-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_description_size }}px;
+      line-height: {{ block.settings.mobile_description_line_height }};
+      letter-spacing: {{ block.settings.mobile_description_letter_spacing }}px;
+      max-width: {{ block.settings.mobile_description_max_width }}px;
+    }
+  }
+{% endstyle %}
+
+<timeline-block-{{ ai_gen_id }}
+  class="ai-timeline-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.kicker_text != blank %}
+    <p class="ai-timeline-kicker-{{ ai_gen_id }}">
+      {{ block.settings.kicker_text }}
+    </p>
+  {% endif %}
+
+  {% if block.settings.heading_primary != blank or block.settings.heading_secondary != blank %}
+    <h2 class="ai-timeline-heading-{{ ai_gen_id }}">
+      {% if block.settings.heading_primary != blank %}
+        <span class="ai-timeline-heading-primary-{{ ai_gen_id }}">{{ block.settings.heading_primary }}</span>
+      {% endif %}
+      {% if block.settings.heading_secondary != blank %}
+        <span class="ai-timeline-heading-secondary-{{ ai_gen_id }}">{{ block.settings.heading_secondary }}</span>
+      {% endif %}
+    </h2>
+  {% endif %}
+
+  <div class="ai-timeline-wrap-{{ ai_gen_id }}">
+    <div class="ai-timeline-items-{{ ai_gen_id }}">
+      <div class="ai-timeline-line-{{ ai_gen_id }}"></div>
+
+      {% for i in (1..5) %}
+        {% liquid
+          assign date_key = 'milestone_' | append: i | append: '_date'
+          assign title_key = 'milestone_' | append: i | append: '_title'
+          assign description_key = 'milestone_' | append: i | append: '_description'
+
+          assign item_date = block.settings[date_key]
+          assign item_title = block.settings[title_key]
+          assign item_description = block.settings[description_key]
+        %}
+
+        {% if item_date != blank or item_title != blank or item_description != blank %}
+          <div class="ai-timeline-item-{{ ai_gen_id }}">
+            <span class="ai-timeline-dot-{{ ai_gen_id }}"></span>
+
+            {% if item_date != blank %}
+              <p class="ai-timeline-date-{{ ai_gen_id }}">{{ item_date }}</p>
+            {% endif %}
+
+            {% if item_title != blank %}
+              <h3 class="ai-timeline-title-{{ ai_gen_id }}">{{ item_title }}</h3>
+            {% endif %}
+
+            {% if item_description != blank %}
+              <p class="ai-timeline-description-{{ ai_gen_id }}">{{ item_description }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</timeline-block-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TimelineBlock{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+
+    if (!customElements.get('timeline-block-{{ ai_gen_id }}')) {
+      customElements.define('timeline-block-{{ ai_gen_id }}', TimelineBlock{{ ai_gen_id }});
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Horizontal timeline",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Top text"
+    },
+    {
+      "type": "text",
+      "id": "kicker_text",
+      "label": "Small top text",
+      "default": "02 / FROM HERE TO HERE"
+    },
+    {
+      "type": "text",
+      "id": "heading_primary",
+      "label": "Heading first part",
+      "default": "Twenty months."
+    },
+    {
+      "type": "text",
+      "id": "heading_secondary",
+      "label": "Heading second part",
+      "default": "Five milestones."
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone 1"
+    },
+    {
+      "type": "text",
+      "id": "milestone_1_date",
+      "label": "Date",
+      "default": "MAR 2024"
+    },
+    {
+      "type": "text",
+      "id": "milestone_1_title",
+      "label": "Title",
+      "default": "Prototype #001"
+    },
+    {
+      "type": "textarea",
+      "id": "milestone_1_description",
+      "label": "Description",
+      "default": "First diorama. 3D-printed. One motor. One car. One garage bench."
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone 2"
+    },
+    {
+      "type": "text",
+      "id": "milestone_2_date",
+      "label": "Date",
+      "default": "JUN 2024"
+    },
+    {
+      "type": "text",
+      "id": "milestone_2_title",
+      "label": "Title",
+      "default": "First small run"
+    },
+    {
+      "type": "textarea",
+      "id": "milestone_2_description",
+      "label": "Description",
+      "default": "30 pads, hand-finished. Sold out in 11 days via DMs."
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone 3"
+    },
+    {
+      "type": "text",
+      "id": "milestone_3_date",
+      "label": "Date",
+      "default": "NOV 2024"
+    },
+    {
+      "type": "text",
+      "id": "milestone_3_title",
+      "label": "Title",
+      "default": "Built out the garage"
+    },
+    {
+      "type": "textarea",
+      "id": "milestone_3_description",
+      "label": "Description",
+      "default": "Three benches, proper lighting, the CNC arrived."
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone 4"
+    },
+    {
+      "type": "text",
+      "id": "milestone_4_date",
+      "label": "Date",
+      "default": "APR 2025"
+    },
+    {
+      "type": "text",
+      "id": "milestone_4_title",
+      "label": "Title",
+      "default": "DriftPad v2"
+    },
+    {
+      "type": "textarea",
+      "id": "milestone_4_description",
+      "label": "Description",
+      "default": "Brushless motor, integrated lighting, the version still shipped."
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone 5"
+    },
+    {
+      "type": "text",
+      "id": "milestone_5_date",
+      "label": "Date",
+      "default": "MAY 2026"
+    },
+    {
+      "type": "text",
+      "id": "milestone_5_title",
+      "label": "Title",
+      "default": "Series 01"
+    },
+    {
+      "type": "textarea",
+      "id": "milestone_5_description",
+      "label": "Description",
+      "default": "Three editions. Proper packaging. The site you're reading."
+    },
+
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f6f2ea"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_grid_background",
+      "label": "Enable grid background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "grid_color",
+      "label": "Grid line color",
+      "default": "#e9e2d7"
+    },
+    {
+      "type": "range",
+      "id": "grid_size",
+      "label": "Grid size",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 180,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 180,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "label": "Desktop left padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "label": "Desktop right padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "label": "Desktop heading bottom space",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 76
+    },
+    {
+      "type": "range",
+      "id": "timeline_top_spacing",
+      "label": "Timeline top spacing",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_column_gap",
+      "label": "Desktop column gap",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_behavior",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "scroll",
+          "label": "Horizontal scroll"
+        },
+        {
+          "value": "stack",
+          "label": "Stack vertical"
+        }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "range",
+      "id": "mobile_width_percent",
+      "label": "Mobile width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Mobile left padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Mobile right padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_margin_bottom",
+      "label": "Mobile heading bottom space",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "mobile_column_gap",
+      "label": "Mobile column gap",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_item_gap",
+      "label": "Mobile stacked item gap",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_stack_text_indent",
+      "label": "Mobile stacked text indent",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+
+    {
+      "type": "header",
+      "content": "Timeline line and dots"
+    },
+    {
+      "type": "range",
+      "id": "line_thickness",
+      "label": "Line thickness",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line color",
+      "default": "#171717"
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "label": "Dot size",
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#e64b24"
+    },
+    {
+      "type": "range",
+      "id": "dot_border_width",
+      "label": "Dot border width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "dot_border_color",
+      "label": "Dot border color",
+      "default": "#171717"
+    },
+    {
+      "type": "range",
+      "id": "dot_spacing_bottom",
+      "label": "Space below dot",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "header",
+      "content": "Top text typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "kicker_font",
+      "label": "Font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "kicker_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Desktop font size",
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_size",
+      "label": "Mobile font size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "kicker_line_height",
+      "label": "Desktop line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_line_height",
+      "label": "Mobile line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "kicker_letter_spacing",
+      "label": "Desktop letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_letter_spacing",
+      "label": "Mobile letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "kicker_color",
+      "label": "Color",
+      "default": "#171717"
+    },
+    {
+      "type": "checkbox",
+      "id": "kicker_uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "kicker_margin_bottom",
+      "label": "Desktop bottom space",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_kicker_margin_bottom",
+      "label": "Mobile bottom space",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+
+    {
+      "type": "header",
+      "content": "Main heading typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop font size",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 54
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile font size",
+      "min": 18,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Desktop line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_line_height",
+      "label": "Mobile line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Desktop letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -1
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_letter_spacing",
+      "label": "Mobile letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.5
+    },
+    {
+      "type": "color",
+      "id": "heading_primary_color",
+      "label": "First part color",
+      "default": "#171717"
+    },
+    {
+      "type": "color",
+      "id": "heading_secondary_color",
+      "label": "Second part color",
+      "default": "#9b9992"
+    },
+
+    {
+      "type": "header",
+      "content": "Date typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "date_font",
+      "label": "Font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "date_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "date_size",
+      "label": "Desktop font size",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_date_size",
+      "label": "Mobile font size",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "date_line_height",
+      "label": "Desktop line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "mobile_date_line_height",
+      "label": "Mobile line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "date_letter_spacing",
+      "label": "Desktop letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_date_letter_spacing",
+      "label": "Mobile letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "date_color",
+      "label": "Color",
+      "default": "#e64b24"
+    },
+    {
+      "type": "checkbox",
+      "id": "date_uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "date_margin_bottom",
+      "label": "Desktop bottom space",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_date_margin_bottom",
+      "label": "Mobile bottom space",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+
+    {
+      "type": "header",
+      "content": "Milestone title typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "milestone_title_font",
+      "label": "Font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "milestone_title_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "milestone_title_size",
+      "label": "Desktop font size",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_milestone_title_size",
+      "label": "Mobile font size",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "milestone_title_line_height",
+      "label": "Desktop line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "mobile_milestone_title_line_height",
+      "label": "Mobile line height",
+      "min": 0.8,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "milestone_title_letter_spacing",
+      "label": "Desktop letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_milestone_title_letter_spacing",
+      "label": "Mobile letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": -0.3
+    },
+    {
+      "type": "color",
+      "id": "milestone_title_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "label": "Desktop bottom space",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_margin_bottom",
+      "label": "Mobile bottom space",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+
+    {
+      "type": "header",
+      "content": "Description typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "description_font",
+      "label": "Font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Desktop font size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile font size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "label": "Desktop line height",
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_line_height",
+      "label": "Mobile line height",
+      "min": 0.8,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "range",
+      "id": "description_letter_spacing",
+      "label": "Desktop letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_letter_spacing",
+      "label": "Mobile letter spacing",
+      "min": -2,
+      "max": 6,
+      "step": 0.1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color",
+      "default": "#222222"
+    },
+    {
+      "type": "range",
+      "id": "description_max_width",
+      "label": "Desktop description max width",
+      "min": 120,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_max_width",
+      "label": "Mobile description max width",
+      "min": 120,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal timeline"
+    }
+  ]
+}
+{% endschema %}

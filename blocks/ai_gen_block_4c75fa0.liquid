@@ -1,0 +1,1360 @@
+{% doc %}
+  @prompt
+    Mobile horizontal scroll image cards like "On real desks".
+    Desktop keeps normal grid.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-how-it-works-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0px;
+    background-color: {{ block.settings.background_color }};
+    font-family: {{ block.settings.body_font_family }};
+    box-sizing: border-box;
+  }
+
+  .ai-how-it-works-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-how-it-works-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.header_alignment }};
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-how-it-works-section-number-{{ ai_gen_id }} {
+    font-family: {{ block.settings.section_number_font_family }};
+    font-size: {{ block.settings.section_number_size }}px;
+    color: {{ block.settings.section_number_color }};
+    margin-bottom: 8px;
+    font-weight: {{ block.settings.section_number_weight }};
+    letter-spacing: {{ block.settings.section_number_letter_spacing }};
+    text-transform: uppercase;
+  }
+
+  .ai-how-it-works-main-heading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.heading_font_family }};
+    font-size: {{ block.settings.main_heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 8px 0;
+    font-weight: {{ block.settings.main_heading_weight }};
+    line-height: {{ block.settings.main_heading_line_height }};
+    letter-spacing: {{ block.settings.main_heading_letter_spacing }};
+  }
+
+  .ai-how-it-works-main-heading-muted-{{ ai_gen_id }} {
+    color: {{ block.settings.main_heading_muted_color }};
+    font-weight: {{ block.settings.main_heading_muted_weight }};
+  }
+
+  .ai-how-it-works-subheading-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font_family }};
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+    font-weight: {{ block.settings.subheading_weight }};
+    line-height: {{ block.settings.body_line_height }};
+  }
+
+  .ai-how-it-works-steps-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.column_gap }}px;
+    margin-top: {{ block.settings.steps_top_spacing }}px;
+  }
+
+  .ai-how-it-works-step-{{ ai_gen_id }} {
+    text-align: {{ block.settings.step_alignment }};
+  }
+
+  .ai-how-it-works-step-image-wrap-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.step_image_height }}px;
+    margin-bottom: {{ block.settings.image_bottom_spacing }}px;
+    border: {{ block.settings.step_image_border_width }}px solid {{ block.settings.step_image_border_color }};
+    border-radius: {{ block.settings.step_image_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.step_image_background }};
+    position: relative;
+  }
+
+  .ai-how-it-works-step-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: {{ block.settings.step_image_fit }};
+  }
+
+  .ai-how-it-works-step-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0.04),
+        rgba(0, 0, 0, 0.04) 1px,
+        transparent 1px,
+        transparent 8px
+      );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777777;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .ai-how-it-works-step-number-{{ ai_gen_id }} {
+    font-family: {{ block.settings.step_number_font_family }};
+    font-size: {{ block.settings.step_number_size }}px;
+    color: {{ block.settings.step_number_color }};
+    margin-bottom: 12px;
+    font-weight: {{ block.settings.step_number_weight }};
+    letter-spacing: {{ block.settings.step_number_letter_spacing }};
+  }
+
+  .ai-how-it-works-step-title-{{ ai_gen_id }} {
+    font-family: {{ block.settings.step_title_font_family }};
+    font-size: {{ block.settings.step_title_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px 0;
+    font-weight: {{ block.settings.step_title_weight }};
+    line-height: {{ block.settings.step_title_line_height }};
+    letter-spacing: {{ block.settings.step_title_letter_spacing }};
+  }
+
+  .ai-how-it-works-step-description-{{ ai_gen_id }} {
+    font-family: {{ block.settings.body_font_family }};
+    font-size: {{ block.settings.step_description_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: {{ block.settings.body_line_height }};
+    font-weight: {{ block.settings.step_description_weight }};
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-how-it-works-{{ ai_gen_id }} {
+      width: 100%;
+      padding: {{ block.settings.mobile_section_padding_top }}px 0 {{ block.settings.mobile_section_padding_bottom }}px;
+      overflow: hidden;
+    }
+
+    .ai-how-it-works-container-{{ ai_gen_id }} {
+      max-width: none;
+      margin: 0;
+      padding-left: {{ block.settings.mobile_side_padding }}px;
+    }
+
+    .ai-how-it-works-header-{{ ai_gen_id }} {
+      text-align: center;
+      margin-bottom: {{ block.settings.mobile_header_spacing }}px;
+      padding-right: {{ block.settings.mobile_side_padding }}px;
+    }
+
+    .ai-how-it-works-section-number-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_section_number_size }}px;
+      letter-spacing: {{ block.settings.mobile_section_number_letter_spacing }};
+      margin-bottom: {{ block.settings.mobile_section_number_bottom_spacing }}px;
+    }
+
+    .ai-how-it-works-main-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_main_heading_size }}px;
+      line-height: {{ block.settings.mobile_main_heading_line_height }};
+      letter-spacing: {{ block.settings.mobile_main_heading_letter_spacing }};
+      margin: 0;
+    }
+
+    .ai-how-it-works-steps-{{ ai_gen_id }} {
+      display: flex;
+      grid-template-columns: none;
+      gap: {{ block.settings.mobile_card_gap }}px;
+      margin-top: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      padding: 0 {{ block.settings.mobile_side_padding }}px {{ block.settings.mobile_scrollbar_spacing }}px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .ai-how-it-works-step-{{ ai_gen_id }} {
+      flex: 0 0 calc((100vw - {{ block.settings.mobile_total_spacing }}px) / 2);
+      width: calc((100vw - {{ block.settings.mobile_total_spacing }}px) / 2);
+      min-width: calc((100vw - {{ block.settings.mobile_total_spacing }}px) / 2);
+      scroll-snap-align: start;
+      text-align: left;
+    }
+
+    .ai-how-it-works-step-image-wrap-{{ ai_gen_id }} {
+      position: relative;
+      height: {{ block.settings.mobile_step_image_height }}px;
+      margin-bottom: {{ block.settings.mobile_image_bottom_spacing }}px;
+      border: {{ block.settings.mobile_image_border_width }} solid {{ block.settings.mobile_image_border_color }};
+      border-radius: 0;
+      background-color: {{ block.settings.step_image_background }};
+      background-image:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(0, 0, 0, 0.055),
+          rgba(0, 0, 0, 0.055) 1px,
+          transparent 1px,
+          transparent 14px
+        );
+      overflow: hidden;
+    }
+
+    .ai-how-it-works-step-image-wrap-{{ ai_gen_id }}::before {
+      content: "";
+      position: absolute;
+      top: {{ block.settings.mobile_corner_offset }}px;
+      left: {{ block.settings.mobile_corner_offset }}px;
+      width: {{ block.settings.mobile_corner_size }}px;
+      height: {{ block.settings.mobile_corner_size }}px;
+      border-top: {{ block.settings.mobile_corner_width }} solid {{ block.settings.mobile_image_border_color }};
+      border-left: {{ block.settings.mobile_corner_width }} solid {{ block.settings.mobile_image_border_color }};
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .ai-how-it-works-step-image-{{ ai_gen_id }} {
+      width: 100%;
+      height: 100%;
+      object-fit: {{ block.settings.mobile_image_fit }};
+      border-radius: 0;
+    }
+
+    .ai-how-it-works-step-placeholder-{{ ai_gen_id }} {
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(0, 0, 0, 0.055),
+          rgba(0, 0, 0, 0.055) 1px,
+          transparent 1px,
+          transparent 14px
+        );
+      font-family: {{ block.settings.body_font_family }};
+      font-size: {{ block.settings.mobile_placeholder_size }}px;
+      font-weight: {{ block.settings.mobile_placeholder_weight }};
+      color: {{ block.settings.mobile_placeholder_color }};
+      letter-spacing: {{ block.settings.mobile_placeholder_letter_spacing }};
+      text-align: center;
+      padding: 12px;
+    }
+
+    .ai-how-it-works-step-number-{{ ai_gen_id }} {
+      display: block;
+      font-size: {{ block.settings.mobile_author_size }}px;
+      font-weight: {{ block.settings.mobile_author_weight }};
+      color: {{ block.settings.mobile_author_color }};
+      letter-spacing: {{ block.settings.mobile_author_letter_spacing }};
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .ai-how-it-works-step-title-{{ ai_gen_id }},
+    .ai-how-it-works-step-description-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-how-it-works-steps-{{ ai_gen_id }}::-webkit-scrollbar {
+      height: {{ block.settings.mobile_scrollbar_height }}px;
+    }
+
+    .ai-how-it-works-steps-{{ ai_gen_id }}::-webkit-scrollbar-track {
+      background: {{ block.settings.mobile_scrollbar_track }};
+    }
+
+    .ai-how-it-works-steps-{{ ai_gen_id }}::-webkit-scrollbar-thumb {
+      background: {{ block.settings.mobile_scrollbar_thumb }};
+      border-radius: 999px;
+      border: {{ block.settings.mobile_scrollbar_thumb_border }}px solid {{ block.settings.mobile_scrollbar_track }};
+    }
+
+    .ai-how-it-works-steps-{{ ai_gen_id }} {
+      scrollbar-color: {{ block.settings.mobile_scrollbar_thumb }} {{ block.settings.mobile_scrollbar_track }};
+      scrollbar-width: auto;
+    }
+  }
+{% endstyle %}
+
+<how-it-works-{{ ai_gen_id }} class="ai-how-it-works-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-how-it-works-container-{{ ai_gen_id }}">
+    <div class="ai-how-it-works-header-{{ ai_gen_id }}">
+      {% if block.settings.section_number != blank %}
+        <div class="ai-how-it-works-section-number-{{ ai_gen_id }}">
+          {{ block.settings.section_number }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.main_heading != blank or block.settings.main_heading_muted != blank %}
+        <h2 class="ai-how-it-works-main-heading-{{ ai_gen_id }}">
+          {{ block.settings.main_heading }}
+          {% if block.settings.main_heading_muted != blank %}
+            <span class="ai-how-it-works-main-heading-muted-{{ ai_gen_id }}">
+              {{ block.settings.main_heading_muted }}
+            </span>
+          {% endif %}
+        </h2>
+      {% endif %}
+
+      {% if block.settings.subheading != blank %}
+        <p class="ai-how-it-works-subheading-{{ ai_gen_id }}">
+          {{ block.settings.subheading }}
+        </p>
+      {% endif %}
+    </div>
+
+    <div class="ai-how-it-works-steps-{{ ai_gen_id }}">
+      {% if block.settings.step_1_enabled %}
+        <div class="ai-how-it-works-step-{{ ai_gen_id }}">
+          <div class="ai-how-it-works-step-image-wrap-{{ ai_gen_id }}">
+            {% if block.settings.step_1_image != blank %}
+              <img
+                src="{{ block.settings.step_1_image | image_url: width: 900 }}"
+                alt="{{ block.settings.step_1_title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.step_1_image.width }}"
+                height="{{ block.settings.step_1_image.height }}"
+                class="ai-how-it-works-step-image-{{ ai_gen_id }}"
+              >
+            {% else %}
+              <div class="ai-how-it-works-step-placeholder-{{ ai_gen_id }}">
+                {{ block.settings.step_1_title }}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if block.settings.step_1_number != blank %}
+            <div class="ai-how-it-works-step-number-{{ ai_gen_id }}">{{ block.settings.step_1_number }}</div>
+          {% endif %}
+
+          {% if block.settings.step_1_title != blank %}
+            <h3 class="ai-how-it-works-step-title-{{ ai_gen_id }}">{{ block.settings.step_1_title }}</h3>
+          {% endif %}
+
+          {% if block.settings.step_1_description != blank %}
+            <div class="ai-how-it-works-step-description-{{ ai_gen_id }}">{{ block.settings.step_1_description }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.step_2_enabled %}
+        <div class="ai-how-it-works-step-{{ ai_gen_id }}">
+          <div class="ai-how-it-works-step-image-wrap-{{ ai_gen_id }}">
+            {% if block.settings.step_2_image != blank %}
+              <img
+                src="{{ block.settings.step_2_image | image_url: width: 900 }}"
+                alt="{{ block.settings.step_2_title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.step_2_image.width }}"
+                height="{{ block.settings.step_2_image.height }}"
+                class="ai-how-it-works-step-image-{{ ai_gen_id }}"
+              >
+            {% else %}
+              <div class="ai-how-it-works-step-placeholder-{{ ai_gen_id }}">
+                {{ block.settings.step_2_title }}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if block.settings.step_2_number != blank %}
+            <div class="ai-how-it-works-step-number-{{ ai_gen_id }}">{{ block.settings.step_2_number }}</div>
+          {% endif %}
+
+          {% if block.settings.step_2_title != blank %}
+            <h3 class="ai-how-it-works-step-title-{{ ai_gen_id }}">{{ block.settings.step_2_title }}</h3>
+          {% endif %}
+
+          {% if block.settings.step_2_description != blank %}
+            <div class="ai-how-it-works-step-description-{{ ai_gen_id }}">{{ block.settings.step_2_description }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.step_3_enabled %}
+        <div class="ai-how-it-works-step-{{ ai_gen_id }}">
+          <div class="ai-how-it-works-step-image-wrap-{{ ai_gen_id }}">
+            {% if block.settings.step_3_image != blank %}
+              <img
+                src="{{ block.settings.step_3_image | image_url: width: 900 }}"
+                alt="{{ block.settings.step_3_title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.step_3_image.width }}"
+                height="{{ block.settings.step_3_image.height }}"
+                class="ai-how-it-works-step-image-{{ ai_gen_id }}"
+              >
+            {% else %}
+              <div class="ai-how-it-works-step-placeholder-{{ ai_gen_id }}">
+                {{ block.settings.step_3_title }}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if block.settings.step_3_number != blank %}
+            <div class="ai-how-it-works-step-number-{{ ai_gen_id }}">{{ block.settings.step_3_number }}</div>
+          {% endif %}
+
+          {% if block.settings.step_3_title != blank %}
+            <h3 class="ai-how-it-works-step-title-{{ ai_gen_id }}">{{ block.settings.step_3_title }}</h3>
+          {% endif %}
+
+          {% if block.settings.step_3_description != blank %}
+            <div class="ai-how-it-works-step-description-{{ ai_gen_id }}">{{ block.settings.step_3_description }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</how-it-works-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HowItWorks{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+    }
+
+    customElements.define('how-it-works-{{ ai_gen_id }}', HowItWorks{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "How it works",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "section_number",
+      "label": "Section label",
+      "default": "ON REAL DESKS"
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main heading",
+      "default": "Three desks."
+    },
+    {
+      "type": "text",
+      "id": "main_heading_muted",
+      "label": "Main heading muted text",
+      "default": "Same piece."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+
+    {
+      "type": "header",
+      "content": "Card 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_1_enabled",
+      "label": "Enable card 1",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "step_1_image",
+      "label": "Card 1 image"
+    },
+    {
+      "type": "text",
+      "id": "step_1_number",
+      "label": "Mobile text under image",
+      "default": "— @kazu_64"
+    },
+    {
+      "type": "text",
+      "id": "step_1_title",
+      "label": "Image label / desktop title",
+      "default": "BATTLESTATION"
+    },
+    {
+      "type": "textarea",
+      "id": "step_1_description",
+      "label": "Desktop description",
+      "default": "Real desk setup."
+    },
+
+    {
+      "type": "header",
+      "content": "Card 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_2_enabled",
+      "label": "Enable card 2",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "step_2_image",
+      "label": "Card 2 image"
+    },
+    {
+      "type": "text",
+      "id": "step_2_number",
+      "label": "Mobile text under image",
+      "default": "— @kaido_diecast"
+    },
+    {
+      "type": "text",
+      "id": "step_2_title",
+      "label": "Image label / desktop title",
+      "default": "GLASS SHELF"
+    },
+    {
+      "type": "textarea",
+      "id": "step_2_description",
+      "label": "Desktop description",
+      "default": "Same piece, different setup."
+    },
+
+    {
+      "type": "header",
+      "content": "Card 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "step_3_enabled",
+      "label": "Enable card 3",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "step_3_image",
+      "label": "Card 3 image"
+    },
+    {
+      "type": "text",
+      "id": "step_3_number",
+      "label": "Mobile text under image",
+      "default": "— @touge_dad"
+    },
+    {
+      "type": "text",
+      "id": "step_3_title",
+      "label": "Image label / desktop title",
+      "default": "DESK SETUP"
+    },
+    {
+      "type": "textarea",
+      "id": "step_3_description",
+      "label": "Desktop description",
+      "default": "Fits cleanly into your desk."
+    },
+
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "step_alignment",
+      "label": "Step alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Column gap desktop",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_column_gap",
+      "label": "Column gap mobile",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+
+    {
+      "type": "header",
+      "content": "Images desktop"
+    },
+    {
+      "type": "range",
+      "id": "step_image_height",
+      "label": "Image height desktop",
+      "min": 100,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "mobile_step_image_height",
+      "label": "Image height mobile",
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 295
+    },
+    {
+      "type": "select",
+      "id": "step_image_fit",
+      "label": "Image fit desktop",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "image_bottom_spacing",
+      "label": "Image bottom spacing desktop",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "step_image_radius",
+      "label": "Image corner radius desktop",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "step_image_border_width",
+      "label": "Image border width desktop",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "step_image_border_color",
+      "label": "Image border color desktop",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "step_image_background",
+      "label": "Image background",
+      "default": "#f7f3ea"
+    },
+
+    {
+      "type": "header",
+      "content": "Spacing desktop"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding desktop",
+      "min": 0,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding",
+      "label": "Old mobile padding",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "header_spacing",
+      "label": "Header spacing desktop",
+      "min": 20,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "steps_top_spacing",
+      "label": "Steps top spacing desktop",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+
+    {
+      "type": "header",
+      "content": "Mobile scroll card design"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_top",
+      "label": "Mobile padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding_bottom",
+      "label": "Mobile padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "label": "Mobile side padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_header_spacing",
+      "label": "Mobile header bottom spacing",
+      "min": 8,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_number_size",
+      "label": "Mobile section label size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "text",
+      "id": "mobile_section_number_letter_spacing",
+      "label": "Mobile section label letter spacing",
+      "default": "0.42em"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_number_bottom_spacing",
+      "label": "Mobile section label bottom spacing",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "mobile_main_heading_line_height",
+      "label": "Mobile main heading line height",
+      "default": "1.05"
+    },
+    {
+      "type": "text",
+      "id": "mobile_main_heading_letter_spacing",
+      "label": "Mobile main heading letter spacing",
+      "default": "-0.04em"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_gap",
+      "label": "Mobile card gap",
+      "min": 4,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_total_spacing",
+      "label": "Mobile card width spacing",
+      "min": 20,
+      "max": 90,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_bottom_spacing",
+      "label": "Mobile image bottom spacing",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_fit",
+      "label": "Mobile image fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "text",
+      "id": "mobile_image_border_width",
+      "label": "Mobile image border width",
+      "default": "1.5px"
+    },
+    {
+      "type": "color",
+      "id": "mobile_image_border_color",
+      "label": "Mobile image border color",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "mobile_corner_size",
+      "label": "Mobile corner size",
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_corner_offset",
+      "label": "Mobile corner offset",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 9
+    },
+    {
+      "type": "text",
+      "id": "mobile_corner_width",
+      "label": "Mobile corner width",
+      "default": "1.5px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_placeholder_size",
+      "label": "Mobile image label size",
+      "min": 8,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "mobile_placeholder_weight",
+      "label": "Mobile image label weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "mobile_placeholder_color",
+      "label": "Mobile image label color",
+      "default": "#77736b"
+    },
+    {
+      "type": "text",
+      "id": "mobile_placeholder_letter_spacing",
+      "label": "Mobile image label letter spacing",
+      "default": "0.35em"
+    },
+    {
+      "type": "range",
+      "id": "mobile_author_size",
+      "label": "Mobile author size",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "select",
+      "id": "mobile_author_weight",
+      "label": "Mobile author weight",
+      "options": [
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "mobile_author_color",
+      "label": "Mobile author color",
+      "default": "#030302"
+    },
+    {
+      "type": "text",
+      "id": "mobile_author_letter_spacing",
+      "label": "Mobile author letter spacing",
+      "default": "0.35em"
+    },
+    {
+      "type": "range",
+      "id": "mobile_scrollbar_spacing",
+      "label": "Mobile scrollbar bottom spacing",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_scrollbar_height",
+      "label": "Mobile scrollbar height",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mobile_scrollbar_thumb_border",
+      "label": "Mobile scrollbar thumb border",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "mobile_scrollbar_track",
+      "label": "Mobile scrollbar track",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_scrollbar_thumb",
+      "label": "Mobile scrollbar thumb",
+      "default": "#8b8b8b"
+    },
+
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f7f3ea"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Main heading color",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "main_heading_muted_color",
+      "label": "Main heading muted color",
+      "default": "#8d8d86"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "section_number_color",
+      "label": "Section number",
+      "default": "#030302"
+    },
+    {
+      "type": "color",
+      "id": "step_number_color",
+      "label": "Step numbers",
+      "default": "#030302"
+    },
+
+    {
+      "type": "header",
+      "content": "Font families"
+    },
+    {
+      "type": "text",
+      "id": "body_font_family",
+      "label": "Body font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "heading_font_family",
+      "label": "Main heading font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "section_number_font_family",
+      "label": "Section number font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "step_number_font_family",
+      "label": "Step number font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+    {
+      "type": "text",
+      "id": "step_title_font_family",
+      "label": "Step title font family",
+      "default": "Inter, Arial, sans-serif"
+    },
+
+    {
+      "type": "header",
+      "content": "Font weights"
+    },
+    {
+      "type": "select",
+      "id": "section_number_weight",
+      "label": "Section number weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "main_heading_weight",
+      "label": "Main heading weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "main_heading_muted_weight",
+      "label": "Main heading muted weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "step_number_weight",
+      "label": "Step number weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "step_title_weight",
+      "label": "Step title weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "step_description_weight",
+      "label": "Step description weight",
+      "options": [
+        { "value": "100", "label": "100 Thin" },
+        { "value": "200", "label": "200 Extra light" },
+        { "value": "300", "label": "300 Light" },
+        { "value": "400", "label": "400 Regular" },
+        { "value": "500", "label": "500 Medium" },
+        { "value": "600", "label": "600 Semi bold" },
+        { "value": "700", "label": "700 Bold" },
+        { "value": "800", "label": "800 Extra bold" },
+        { "value": "900", "label": "900 Black" }
+      ],
+      "default": "400"
+    },
+
+    {
+      "type": "header",
+      "content": "Typography sizes"
+    },
+    {
+      "type": "range",
+      "id": "section_number_size",
+      "label": "Section number size desktop",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "main_heading_size",
+      "label": "Main heading size desktop",
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_main_heading_size",
+      "label": "Main heading size mobile",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "step_number_size",
+      "label": "Step number size desktop",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "step_title_size",
+      "label": "Step title size desktop",
+      "min": 14,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "step_description_size",
+      "label": "Step description size desktop",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+
+    {
+      "type": "header",
+      "content": "Typography advanced"
+    },
+    {
+      "type": "text",
+      "id": "main_heading_line_height",
+      "label": "Main heading line height desktop",
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "step_title_line_height",
+      "label": "Step title line height desktop",
+      "default": "1.1"
+    },
+    {
+      "type": "text",
+      "id": "body_line_height",
+      "label": "Body line height desktop",
+      "default": "1.6"
+    },
+    {
+      "type": "text",
+      "id": "section_number_letter_spacing",
+      "label": "Section number letter spacing desktop",
+      "default": "0.42em"
+    },
+    {
+      "type": "text",
+      "id": "main_heading_letter_spacing",
+      "label": "Main heading letter spacing desktop",
+      "default": "-0.02em"
+    },
+    {
+      "type": "text",
+      "id": "step_number_letter_spacing",
+      "label": "Step number letter spacing desktop",
+      "default": "0.35em"
+    },
+    {
+      "type": "text",
+      "id": "step_title_letter_spacing",
+      "label": "Step title letter spacing desktop",
+      "default": "-0.02em"
+    }
+  ],
+  "presets": [
+    {
+      "name": "How it works"
+    }
+  ]
+}
+{% endschema %}

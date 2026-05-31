@@ -1,0 +1,215 @@
+{% if section.blocks.size > 1 %}
+  <script
+    src="{{ 'announcement-bar.js' | asset_url }}"
+    type="module"
+  ></script>
+{% endif %}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+<section
+  class="custom-announcement-bar spacing-style section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;"
+>
+  <div class="custom-announcement-inner">
+    <div class="announcement-left">
+      <span class="announcement-marquee-text">
+        {{ section.settings.left_text }}
+      </span>
+      <span class="announcement-marquee-text announcement-marquee-duplicate">
+        {{ section.settings.left_text }}
+      </span>
+    </div>
+
+    {% if section.settings.show_right_text %}
+      <div class="announcement-right">
+        {{ section.settings.right_text }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .custom-announcement-bar {
+    border-block-end: var(--border-bottom-width) solid var(--color-border);
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+  }
+
+  .custom-announcement-inner {
+    width: 100%;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    overflow: hidden;
+  }
+
+  .announcement-left,
+  .announcement-right {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    line-height: 1;
+    color: white;
+    white-space: nowrap;
+  }
+
+  .announcement-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .announcement-marquee-text {
+    display: inline-block;
+  }
+
+  .announcement-marquee-duplicate {
+    display: none;
+  }
+
+  .announcement-right {
+    text-align: right;
+  }
+
+  @media screen and (max-width: 749px) {
+    .custom-announcement-inner {
+      min-height: 32px;
+      justify-content: flex-start;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .announcement-right {
+      display: none;
+    }
+
+    .announcement-left {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      display: flex;
+      gap: 40px;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      white-space: nowrap;
+    }
+
+    .announcement-marquee-text {
+      display: inline-block;
+      flex: 0 0 auto;
+      animation: announcement-marquee 14s linear infinite;
+      padding-right: 40px;
+    }
+
+    .announcement-marquee-duplicate {
+      display: inline-block;
+    }
+
+    @keyframes announcement-marquee {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(calc(-100% - 40px));
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Custom Announcement Bar",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "left_text",
+      "label": "Left text",
+      "default": "FREE SHIPPING · ORDERS OVER $80"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_right_text",
+      "label": "Show right text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "right_text",
+      "label": "Right text",
+      "default": "EN / USD"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "scheme-4",
+      "label": "Color scheme"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "Divider thickness",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Announcement Bar"
+    }
+  ]
+}
+{% endschema %}
